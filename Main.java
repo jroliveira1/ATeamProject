@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -57,14 +58,13 @@ public class Main extends Application {
         viewButton.setText(clicks + " clicks");
     }
 
-    private VBox makeLeftComponent(){
+    private TabPane makeLeftComponent(){
         VBox leftComponent = new VBox(); // will contain part of gui where user can select different viewing options
-        HBox modesHolder = new HBox(); // holds view and Edit button
-        Button view = new Button("view");
-        Button edit = new Button("edit");
-        modesHolder.getChildren().addAll(view, edit);
-        modesHolder.setPadding(new Insets(10,0,0,0));
-
+        TabPane modesHolder = new TabPane(); // holds view and Edit button
+        Tab view = new Tab("view");
+        Tab edit = new Tab("edit");
+    
+        
         // farm year and month input
         Insets inputPadd = new Insets(10,0,0,0);
 
@@ -81,8 +81,11 @@ public class Main extends Application {
         TextField monthIn = new TextField();
 
 
-        leftComponent.getChildren().addAll(modesHolder, farmId,farmIdInfo,year,yearInput,month,monthIn);
-        return leftComponent;
+        leftComponent.getChildren().addAll(farmId,farmIdInfo,year,yearInput,month,monthIn);
+        view.setContent(leftComponent);
+        modesHolder.getTabs().addAll(view,edit);
+        modesHolder.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+        return modesHolder;
     }
 
     /**
