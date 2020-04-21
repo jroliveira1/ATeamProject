@@ -30,14 +30,18 @@ public class Main extends Application {
 
 
         // load button for top component
+        VBox loadContaner = new VBox();
         Button loadBut = new Button("Load");
+        Separator separator1 = new Separator();
+        separator1.setMaxWidth(200);
+        loadContaner.getChildren().addAll(loadBut,separator1);
 
 
         // Main layout is Border Pane example (top,left,center,right,bottom)
         BorderPane root = new BorderPane();
 
         // add top, left, center, right, and bottom components
-        root.setTop(loadBut);
+        root.setTop(loadContaner);
         root.setLeft(makeLeftComponent());
 
         Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
