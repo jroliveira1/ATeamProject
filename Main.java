@@ -12,13 +12,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import static javafx.geometry.HorizontalDirection.LEFT;
-
-
 
 public class Main extends Application {
     int farmId; // used to store farmId user entered
@@ -39,24 +36,17 @@ public class Main extends Application {
         VBox loadContaner = new VBox();
         Button loadBut = new Button("Load");
         Separator separator1 = new Separator();
-        loadBut.setStyle("-fx-focus-color: transparent;");
-        loadBut.setStyle("-fx-border-color:transparent;");
-        loadBut.setStyle("-fx-background-radius: 0");
-        
-        separator1.setMaxWidth(700);
+        separator1.setMaxWidth(200);
         loadContaner.getChildren().addAll(loadBut,separator1);
 
 
         // Main layout is Border Pane example (top,left,center,right,bottom)
         BorderPane root = new BorderPane();
-        
+
         // add top, left, center, right, and bottom components
-        TabPane leftComponent = makeLeftComponent();
-        
-        BorderPane.setMargin(leftComponent, new Insets(0,0,0,10));
         root.setTop(loadContaner);
-        root.setLeft(leftComponent);
-        
+        root.setLeft(makeLeftComponent());
+
         Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Add the stuff and set the primary stage
@@ -71,26 +61,32 @@ public class Main extends Application {
     }
 
     private TabPane makeLeftComponent(){
-        final ToggleGroup group = new ToggleGroup();
-        VBox leftComponent = new VBox(); // holds view and Edit button
-        leftComponent.setStyle("-fx-background-color: #FFFFFF;");
-        leftComponent.setPrefWidth(200);
-        leftComponent.setMaxHeight(600);
-        leftComponent.setPadding(new Insets(0,10,10,10));
-       
         TabPane modesHolder = new TabPane(); // holds view and Edit button
         Tab view = new Tab("view");
         Tab edit = new Tab("edit");
-        
-       
+
+        view.setContent(makeViewTab());
+        modesHolder.getTabs().addAll(view,edit);
+        modesHolder.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        return modesHolder;
+    }
+
+    private VBox makeViewTab(){
+        final ToggleGroup group = new ToggleGroup();
+        VBox viewComponent= new VBox(); // holds view and Edit button
+        viewComponent.setStyle("-fx-background-color: #FFFFFF;");
+        viewComponent.setPrefWidth(200);
+        viewComponent.setMaxHeight(600);
+        viewComponent.setPadding(new Insets(0,10,10,10));
+
+
         // farm year and month input
         Insets inputPadd = new Insets(10,0,0,0);
-
         Label farmId = new Label("Farm ID");
         TextField farmIdInfo = new TextField();
         farmId.setPadding(new Insets(50,0,0,0));
         farmIdInfo.setMaxWidth(100);
-        
+
         Label year = new Label("Year");
         year.setPadding(inputPadd);
         TextField yearInput = new TextField();
@@ -100,40 +96,55 @@ public class Main extends Application {
         month.setPadding(inputPadd);
         TextField monthIn = new TextField();
         monthIn.setMaxWidth(100);
-        // make containers for different ways to view data
-        
-        HBox display = new HBox();
-        HBox min = new HBox();
-        HBox max = new HBox();
-        HBox average = new HBox();
-
-        Label displayLab = new Label("Display %");
-        Label minLab = new Label("Min");
-        Label maxLab = new Label("Max");
-        Label averageLab = new Label("Average");
-
-        RadioButton displayCheck = new RadioButton("Display %");
-        RadioButton minCheck = new RadioButton("Min");
-        RadioButton maxCheck = new RadioButton("Max");
-        RadioButton averageCheck = new RadioButton("Average");
-        minCheck.setToggleGroup(group);
-        maxCheck.setToggleGroup(group);
-        averageCheck.setToggleGroup(group);
-        
-        display.getChildren().addAll(displayLab, displayCheck);
-        min.getChildren().addAll(minLab, minCheck);
-        max.getChildren().addAll(maxLab, maxCheck);
-        average.getChildren().addAll(averageLab, averageCheck);
 
 
 
 
+        // make radio buttons for diff views
+        RadioButton displayTog = new RadioButton("Display %");
+        displayTog.setPadding(new Insets(20,0,0,0));
+        RadioButton minTog = new RadioButton("Min");
+        RadioButton maxTog = new RadioButton("Max");
+        RadioButton averageTog = new RadioButton("Average");
+        averageTog.setPadding(new Insets(0,0,150,0));
+        minTog.setToggleGroup(group);
+        maxTog.setToggleGroup(group);
+        averageTog.setToggleGroup(group);
 
-        leftComponent.getChildren().addAll(modesHolder, farmId,farmIdInfo,year,yearInput,month,monthIn,displayCheck,minCheck,maxCheck,averageCheck);
-        view.setContent(leftComponent);
-        modesHolder.getTabs().addAll(view,edit);
-        modesHolder.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        return modesHolder;
+
+        // make report type buttons
+        VBox reportHolder = new VBox(5);
+
+        Button farmReport = new Button("Farm Report");
+        farmReport.setPrefWidth(200);
+
+        Button annualReport = new Button("Annual Report");
+        annualReport.setPrefWidth(200);
+
+        Button monthReport = new Button("Monthly Report");
+        monthReport.setPrefWidth(200);
+        reportHolder.getChildren().addAll(farmReport,annualReport,monthReport);
+        reportHolder.setPadding(new Insets(0,0,10,0));
+
+        // make start date and end date textfields
+        HBox datesHold = new HBox(5);
+        Label start = new Label("Start Date");
+        TextField startDate = new TextField();
+        startDate.setMaxWidth(20);
+        Label end = new Label("End Date");
+        TextField endDate = new TextField();
+        endDate.setMaxWidth(20);
+        datesHold.getChildren().addAll(start,startDate,end,endDate);
+
+        // report data range button
+        VBox rangeHolder = new VBox();
+        Button rangeReport = new Button("Date Range Report");
+        rangeReport.setPrefWidth(200);
+        rangeHolder.getChildren().add(rangeReport);
+        rangeHolder.setPadding(new Insets(5,0,0,0));
+
+        viewComponent.getChildren().addAll(farmId,farmIdInfo,year,yearInput,month,monthIn,displayTog,minTog,maxTog,averageTog, reportHolder,datesHold, rangeHolder);
+        return viewComponent;
     }
 
     /**
