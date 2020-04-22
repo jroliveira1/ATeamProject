@@ -127,14 +127,23 @@ public class Main extends Application {
         reportHolder.setPadding(new Insets(0,0,10,0));
 
         // make start date and end date textfields
+        VBox startHolder = new VBox(5);
+        VBox endHolder = new VBox(5);
         HBox datesHold = new HBox(5);
         Label start = new Label("Start Date");
         TextField startDate = new TextField();
-        startDate.setMaxWidth(20);
-        Label end = new Label("End Date");
+        startDate.setPrefWidth(90);
         TextField endDate = new TextField();
-        endDate.setMaxWidth(20);
-        datesHold.getChildren().addAll(start,startDate,end,endDate);
+        Label end = new Label("End Date");
+        Label dash = new Label("-");
+        dash.setPadding(new Insets (25,5,0,5));
+        endDate.setPrefWidth(90);
+        startHolder.getChildren().addAll(start,startDate);
+        startHolder.setPadding(new Insets(0,0,0,10));
+        endHolder.getChildren().addAll(end, endDate);
+        endHolder.setPadding(new Insets(0,10,0,0));
+        datesHold.getChildren().addAll(startHolder,dash,endHolder);
+        
 
         // report data range button
         VBox rangeHolder = new VBox();
@@ -161,7 +170,7 @@ public class Main extends Application {
         Button clicksButton = new Button(clicks + " clicks");
         clicksButton.setOnAction(
                 event -> clicksButton.setText(++clicks + " clicks")
-        );
+                );
         clicksButton.setPadding(new Insets(20));
 
         Button resetButton = new Button("reset");
