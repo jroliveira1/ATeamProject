@@ -61,6 +61,7 @@ public class Main extends Application {
     }
 
     private TabPane makeLeftComponent(){
+        final ToggleGroup group = new ToggleGroup();
         VBox leftComponent= new VBox(); // holds view and Edit button
         TabPane modesHolder = new TabPane(); // holds view and Edit button
         Tab view = new Tab("view");
@@ -82,6 +83,7 @@ public class Main extends Application {
         TextField monthIn = new TextField();
 
         // make containers for different ways to view data
+        
         HBox display = new HBox();
         HBox min = new HBox();
         HBox max = new HBox();
@@ -92,11 +94,14 @@ public class Main extends Application {
         Label maxLab = new Label("Max");
         Label averageLab = new Label("Average");
 
-        CheckBox displayCheck = new CheckBox("Display %");
-        CheckBox minCheck = new CheckBox("Min");
-        CheckBox maxCheck = new CheckBox("Max");
-        CheckBox averageCheck = new CheckBox("Average");
-
+        RadioButton displayCheck = new RadioButton("Display %");
+        RadioButton minCheck = new RadioButton("Min");
+        RadioButton maxCheck = new RadioButton("Max");
+        RadioButton averageCheck = new RadioButton("Average");
+        minCheck.setToggleGroup(group);
+        maxCheck.setToggleGroup(group);
+        averageCheck.setToggleGroup(group);
+        
         display.getChildren().addAll(displayLab, displayCheck);
         min.getChildren().addAll(minLab, minCheck);
         max.getChildren().addAll(maxLab, maxCheck);
