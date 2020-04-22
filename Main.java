@@ -34,9 +34,10 @@ public class Main extends Application {
 
         // load button for top component
         VBox loadContaner = new VBox();
-        Button loadBut = new Button("Load");
+        Button loadBut = new Button("Load File");
         Separator separator1 = new Separator();
         separator1.setMaxWidth(200);
+        loadContaner.setPadding(new Insets(20, 20, 20, 20));
         loadContaner.getChildren().addAll(loadBut,separator1);
 
 
@@ -69,6 +70,7 @@ public class Main extends Application {
 
         // farm year and month input
         Insets inputPadd = new Insets(10,0,0,0);
+        leftComponent.setPadding(new Insets(0,20,20,20));
 
         Label farmId = new Label("Farm ID");
         TextField farmIdInfo = new TextField();
