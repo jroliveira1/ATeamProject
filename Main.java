@@ -7,13 +7,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+
+import static javafx.geometry.HorizontalDirection.LEFT;
 
 public class Main extends Application {
     int farmId; // used to store farmId user entered
@@ -59,12 +61,11 @@ public class Main extends Application {
     }
 
     private TabPane makeLeftComponent(){
-        VBox leftComponent = new VBox(); // will contain part of gui where user can select different viewing options
+        VBox leftComponent= new VBox(); // holds view and Edit button
         TabPane modesHolder = new TabPane(); // holds view and Edit button
         Tab view = new Tab("view");
         Tab edit = new Tab("edit");
-    
-        
+
         // farm year and month input
         Insets inputPadd = new Insets(10,0,0,0);
 
@@ -80,11 +81,35 @@ public class Main extends Application {
         month.setPadding(inputPadd);
         TextField monthIn = new TextField();
 
+        // make containers for different ways to view data
+        HBox display = new HBox();
+        HBox min = new HBox();
+        HBox max = new HBox();
+        HBox average = new HBox();
 
-        leftComponent.getChildren().addAll(farmId,farmIdInfo,year,yearInput,month,monthIn);
+        Label displayLab = new Label("Display %");
+        Label minLab = new Label("Min");
+        Label maxLab = new Label("Max");
+        Label averageLab = new Label("Average");
+
+        CheckBox displayCheck = new CheckBox("Display %");
+        CheckBox minCheck = new CheckBox("Min");
+        CheckBox maxCheck = new CheckBox("Max");
+        CheckBox averageCheck = new CheckBox("Average");
+
+        display.getChildren().addAll(displayLab, displayCheck);
+        min.getChildren().addAll(minLab, minCheck);
+        max.getChildren().addAll(maxLab, maxCheck);
+        average.getChildren().addAll(averageLab, averageCheck);
+
+
+
+
+
+        leftComponent.getChildren().addAll(modesHolder, farmId,farmIdInfo,year,yearInput,month,monthIn,displayCheck,minCheck,maxCheck,averageCheck);
         view.setContent(leftComponent);
         modesHolder.getTabs().addAll(view,edit);
-        modesHolder.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+        modesHolder.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         return modesHolder;
     }
 
