@@ -82,36 +82,30 @@ public class Main extends Application {
         month.setPadding(inputPadd);
         TextField monthIn = new TextField();
 
-        // make containers for different ways to view data
-        
-        HBox display = new HBox();
-        HBox min = new HBox();
-        HBox max = new HBox();
-        HBox average = new HBox();
 
-        Label displayLab = new Label("Display %");
-        Label minLab = new Label("Min");
-        Label maxLab = new Label("Max");
-        Label averageLab = new Label("Average");
 
-        RadioButton displayCheck = new RadioButton("Display %");
-        RadioButton minCheck = new RadioButton("Min");
-        RadioButton maxCheck = new RadioButton("Max");
-        RadioButton averageCheck = new RadioButton("Average");
-        minCheck.setToggleGroup(group);
-        maxCheck.setToggleGroup(group);
-        averageCheck.setToggleGroup(group);
-        
-        display.getChildren().addAll(displayLab, displayCheck);
-        min.getChildren().addAll(minLab, minCheck);
-        max.getChildren().addAll(maxLab, maxCheck);
-        average.getChildren().addAll(averageLab, averageCheck);
+
+        // make radio buttons for diff views
+        RadioButton displayTog = new RadioButton("Display %");
+        RadioButton minTog = new RadioButton("Min");
+        RadioButton maxTog = new RadioButton("Max");
+        RadioButton averageTog = new RadioButton("Average");
+        minTog.setToggleGroup(group);
+        maxTog.setToggleGroup(group);
+        averageTog.setToggleGroup(group);
 
 
 
 
+        Button farmReport = new Button("Farm Report");
+        Button annualReport = new Button("Annual Report");
+        Button monthReport = new Button("Monthly Report");
 
-        leftComponent.getChildren().addAll(modesHolder, farmId,farmIdInfo,year,yearInput,month,monthIn,displayCheck,minCheck,maxCheck,averageCheck);
+        // make start date and end date textfields
+        TextField startDate = new TextField("Start Date");
+
+
+        leftComponent.getChildren().addAll(modesHolder, farmId,farmIdInfo,year,yearInput,month,monthIn,displayTog,minTog,maxTog,averageTog, farmReport, annualReport,monthReport,startDate);
         view.setContent(leftComponent);
         modesHolder.getTabs().addAll(view,edit);
         modesHolder.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
