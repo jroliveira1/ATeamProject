@@ -51,10 +51,11 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
         
         // add top, left, center, right, and bottom components
+        TabPane leftComponent = makeLeftComponent();
         
-        
+        BorderPane.setMargin(leftComponent, new Insets(0,0,0,10));
         root.setTop(loadContaner);
-        root.setLeft(makeLeftComponent());
+        root.setLeft(leftComponent);
         
         Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
