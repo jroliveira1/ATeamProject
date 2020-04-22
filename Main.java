@@ -70,9 +70,9 @@ public class Main extends Application {
         editComponent.setStyle("-fx-background-color: #FFFFFF;");
         editComponent.setPrefWidth(200);
         editComponent.setMaxHeight(600);
-        editComponent.setPadding(new Insets(0, 10, 10, 10));
-        Label instr = new Label("Enter in information below and than click add. \n Enter date in 11/07/1999 format");
-       // instr.setPadding(new Insets(50));
+        editComponent.setPadding(new Insets(0, 10, 10, 30));
+        Label instr = new Label("11/07/1999 format");
+        instr.setPadding(new Insets(50,0,0,0));
 
         // farm year and month input
         Insets inputPadd = new Insets(10, 0, 0, 0);
@@ -85,7 +85,7 @@ public class Main extends Application {
         Label date = new Label("Date");
         date.setPadding(inputPadd);
         TextField dateIn = new TextField();
-        date.setMaxWidth(100);
+        dateIn.setMaxWidth(100);
 
         Label weight = new Label("Weight");
         weight.setPadding(inputPadd);
@@ -97,7 +97,7 @@ public class Main extends Application {
         Button addData = new Button("Add Data");
       //  addData.setPrefWidth(50);
         addHolder.getChildren().add(addData);
-        addHolder.setPadding(new Insets(5, 0, 0, 0));
+        addHolder.setPadding(new Insets(30, 0, 0, 0));
 
         editComponent.getChildren().addAll(instr, farmId, farmIdInfo, date, dateIn, weight, weightInput,addHolder);
 
