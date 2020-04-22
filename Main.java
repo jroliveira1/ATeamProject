@@ -1,25 +1,34 @@
 package application;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class Main extends Application {
-    int farmId; // used to store farmId user entered
-    int year; // used to store year user entered
-    int month; // used to store month user entered
+    private  int farmId; // used to store farmId user entered
+    private  int year; // used to store year user entered
+    private  int month; // used to store month user entered
+
+    private TableView<FarmData> table;
+    private ObservableList<FarmData> data = FXCollections.observableArrayList();
+
 
     private static final int WINDOW_WIDTH = 700;
     private static final int WINDOW_HEIGHT = 700;
     private static final String APP_TITLE = "Hello World!";
-    private static int clicks = 0;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -39,7 +48,8 @@ public class Main extends Application {
         // add top, left, center, right, and bottom components
         root.setTop(loadContaner);
         root.setLeft(makeLeftComponent());
-
+        makeTable();
+        root.setCenter(table);
         Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Add the stuff and set the primary stage
@@ -48,11 +58,62 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private void viewAction(Button viewButton) {
-        clicks = 0;
-        viewButton.setText(clicks + " clicks");
+    private void makeTable(){
+        table = new TableView<FarmData>();
+
+        TableColumn<FarmData,String> farmIDCol = new TableColumn<>("FarmID");
+        farmIDCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("farmID"));
+
+        TableColumn<FarmData,Integer> weightCol = new TableColumn<>("Weight");
+        weightCol.setCellValueFactory(new PropertyValueFactory<FarmData, Integer>("weight"));
+
+        table.getColumns().setAll(farmIDCol,weightCol);
+
+
+
+        // set table properties
+        table.setPrefWidth(400);
+        table.setPrefHeight(250);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setPadding(new Insets(20,20,20,20));
+
     }
 
+
+    private void dummyData(){
+        data.add(new FarmData("1",2000));
+        data.add(new FarmData("2",6000));
+        data.add(new FarmData("3",3000));
+        data.add(new FarmData("4",4000));
+    }
+
+    private void farmReport() {
+        table.setVisible(false);
+    }
+
+    private void annualReport() {
+        table.setVisible(true);
+        data = FXCollections.observableArrayList();
+        table.setItems(data);
+
+      dummyData();
+       data.add(new FarmData("Sion's farm", 4558858));
+    }
+
+    private void monthlyReport(){
+
+    }
+
+    private void dateRangeReport(){
+        
+    }
+
+
+
+    /**
+     * create the gui for the left component
+     * @return
+     */
     private TabPane makeLeftComponent() {
         TabPane modesHolder = new TabPane(); // holds view and Edit button
         Tab view = new Tab("view");
@@ -63,45 +124,6 @@ public class Main extends Application {
         modesHolder.getTabs().addAll(view, edit);
         modesHolder.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         return modesHolder;
-    }
-
-    private VBox makeEditTab() {
-        VBox editComponent = new VBox(); // holds view and Edit button
-        editComponent.setStyle("-fx-background-color: #FFFFFF;");
-        editComponent.setPrefWidth(200);
-        editComponent.setMaxHeight(600);
-        editComponent.setPadding(new Insets(0, 10, 10, 30));
-        Label instr = new Label("11/07/1999 format");
-        instr.setPadding(new Insets(50,0,0,0));
-
-        // farm year and month input
-        Insets inputPadd = new Insets(10, 0, 0, 0);
-        Label farmId = new Label("Farm ID");
-        TextField farmIdInfo = new TextField();
-        farmId.setPadding(new Insets(50, 0, 0, 0));
-        farmIdInfo.setMaxWidth(100);
-
-
-        Label date = new Label("Date");
-        date.setPadding(inputPadd);
-        TextField dateIn = new TextField();
-        dateIn.setMaxWidth(100);
-
-        Label weight = new Label("Weight");
-        weight.setPadding(inputPadd);
-        TextField weightInput = new TextField();
-        weightInput.setMaxWidth(100);
-
-        // report data range button
-        VBox addHolder = new VBox();
-        Button addData = new Button("Add Data");
-      //  addData.setPrefWidth(50);
-        addHolder.getChildren().add(addData);
-        addHolder.setPadding(new Insets(30, 0, 0, 0));
-
-        editComponent.getChildren().addAll(instr, farmId, farmIdInfo, date, dateIn, weight, weightInput,addHolder);
-
-        return editComponent;
     }
 
     private VBox makeViewTab() {
@@ -144,14 +166,16 @@ public class Main extends Application {
         averageTog.setToggleGroup(group);
 
 
-        // make report type buttons
+        // report type buttons
         VBox reportHolder = new VBox(5);
 
         Button farmReport = new Button("Farm Report");
         farmReport.setPrefWidth(200);
+        farmReport.setOnAction(event -> farmReport());
 
         Button annualReport = new Button("Annual Report");
         annualReport.setPrefWidth(200);
+        annualReport.setOnAction(event -> annualReport());
 
         Button monthReport = new Button("Monthly Report");
         monthReport.setPrefWidth(200);
@@ -188,38 +212,49 @@ public class Main extends Application {
         return viewComponent;
     }
 
-    /**
-     * creates instances of everything needed for the desired vBox
-     *
-     * @return
-     */
-    private VBox makeRightComponent() {
-        VBox vBox = new VBox();
-        ObservableList<String> possGrades = FXCollections.observableArrayList("A", "B", "C", "D", "F");
-        ListView<String> grades = new ListView<>(possGrades);
 
 
-        // tracks how many times the button was clicked
-        Button clicksButton = new Button(clicks + " clicks");
-        clicksButton.setOnAction(
-                event -> clicksButton.setText(++clicks + " clicks")
-        );
-        clicksButton.setPadding(new Insets(20));
+    private VBox makeEditTab() {
+        VBox editComponent = new VBox(); // holds view and Edit button
+        editComponent.setStyle("-fx-background-color: #FFFFFF;");
+        editComponent.setPrefWidth(200);
+        editComponent.setMaxHeight(600);
+        editComponent.setPadding(new Insets(0, 10, 10, 30));
+        Label instr = new Label("11/07/1999 format");
+        instr.setPadding(new Insets(50,0,0,0));
 
-        Button resetButton = new Button("reset");
-        resetButton.setOnAction(
-                event -> viewAction(clicksButton)
-        );
-        resetButton.setPadding(new Insets(20));
+        // farm year and month input
+        Insets inputPadd = new Insets(10, 0, 0, 0);
+        Label farmId = new Label("Farm ID");
+        TextField farmIdInfo = new TextField();
+        farmId.setPadding(new Insets(50, 0, 0, 0));
+        farmIdInfo.setMaxWidth(100);
 
-        HBox buttonMan = new HBox();
-        buttonMan.getChildren().addAll(clicksButton, resetButton);
-        buttonMan.setSpacing(5);
 
-        vBox.getChildren().addAll(buttonMan, grades);
-        VBox.setMargin(buttonMan, new Insets(10));
-        return vBox;
+        Label date = new Label("Date");
+        date.setPadding(inputPadd);
+        TextField dateIn = new TextField();
+        dateIn.setMaxWidth(100);
+
+        Label weight = new Label("Weight");
+        weight.setPadding(inputPadd);
+        TextField weightInput = new TextField();
+        weightInput.setMaxWidth(100);
+
+        // report data range button
+        VBox addHolder = new VBox();
+        Button addData = new Button("Add Data");
+      //  addData.setPrefWidth(50);
+        addHolder.getChildren().add(addData);
+        addHolder.setPadding(new Insets(30, 0, 0, 0));
+
+        editComponent.getChildren().addAll(instr, farmId, farmIdInfo, date, dateIn, weight, weightInput,addHolder);
+
+        return editComponent;
     }
+
+
+
 
     /**
      * @param args
