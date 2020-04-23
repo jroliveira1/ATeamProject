@@ -8,16 +8,13 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.io.File;
 import java.util.Comparator;
@@ -32,12 +29,11 @@ public class Main extends Application {
     private int year; // used to store year user entered
     private int month; // used to store month user entered
 
-    Scene mainScene;
-
-    private Label minMaxOrAve  = new Label();
+    Scene scene;
 
     private TableView<FarmData> table;
     private ObservableList<FarmData> data = FXCollections.observableArrayList();
+    private Label minMaxOrAve = new Label();
     private Text txtStatus;
 
 
@@ -81,11 +77,11 @@ private VBox reportHolder;
        // leftComponent.setOnMousePressed(event -> dragging.set(true));
 
         leftComponent.setOnMouseMoved(event -> {
-            if(event.getX() < leftCompWidth - 15 || event.getX() > leftCompWidth + 15) mainScene.setCursor(Cursor.DEFAULT);
-            else mainScene.setCursor(Cursor.H_RESIZE);
+            if(event.getX() < leftCompWidth - 15 || event.getX() > leftCompWidth + 15) scene.setCursor(Cursor.DEFAULT);
+            else scene.setCursor(Cursor.H_RESIZE);
         });
         leftComponent.setOnMouseDragged(event -> {
-            if(mainScene.getCursor().equals(Cursor.H_RESIZE) && event.getX() > 10 && event.getX() < WINDOW_WIDTH - 10) leftCompWidth = (int) event.getX();
+            if(scene.getCursor().equals(Cursor.H_RESIZE) && event.getX() > 10 && event.getX() < WINDOW_WIDTH - 10) leftCompWidth = (int) event.getX();
              leftComponent.setPrefWidth(leftCompWidth);
 
 
@@ -101,17 +97,16 @@ private VBox reportHolder;
         makeTable();
         table.setOnMouseMoved(event -> {
 
-            if(event.getX() > 15 ) mainScene.setCursor(Cursor.DEFAULT);
+            if(event.getX() > 15 ) scene.setCursor(Cursor.DEFAULT);
         });
         root.setCenter(table);
 
-         mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        mainScene.getStylesheets().add(getClass().getResource("application..css").toExternalForm());
+         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+       scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         // Add the stuff and set the primary stage
         primaryStage.setTitle(APP_TITLE);
-        primaryStage.setScene(mainScene);
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
@@ -139,14 +134,14 @@ private VBox reportHolder;
         table.setPrefWidth(400);
         table.setPrefHeight(250);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.getSelectionModel().selectedIndexProperty().
-                addListener(new RowChangeHandler());
-        table.setEditable(true);
-        farmIDCol.setCellFactory(((TextFieldTableCell.forTableColumn())));
-        weightCol.setOnEditCommit(event -> (event.getTableView().
-                getItems().get(event.getTablePosition().getRow())).
-                setWeight(event.getNewValue()));
-        txtStatus = new Text();
+//        table.getSelectionModel().selectedIndexProperty().
+//                addListener(new RowChangeHandler());
+//        table.setEditable(true);
+//        farmIDCol.setCellFactory(((TextFieldTableCell.forTableColumn())));
+//        weightCol.setOnEditCommit(event -> (event.getTableView().
+//                getItems().get(event.getTablePosition().getRow())).
+//                setWeight(event.getNewValue()));
+//        txtStatus = new Text();
 
 
         table.setPadding(new Insets(20, 20, 20, 20));
@@ -298,8 +293,7 @@ private VBox reportHolder;
 
         ToggleButton percentTog = new ToggleButton();
         percentTog.setOnAction(event -> {if (percentTog.isSelected()) table.getColumns().get(3).setVisible(true);
-        else table.getColumns().get(3).setVisible(false);
-            System.out.println(data.get(0).getFarmID());});
+        else table.getColumns().get(3).setVisible(false); });
 
 
 
