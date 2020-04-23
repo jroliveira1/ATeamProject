@@ -13,5 +13,5 @@ Team Members:
 Which team members were on same xteam together?
 Sreenivas and Jason
 
-Other notes or comments to the grader: NA
+Other notes or comments to the grader: was unable to get the css style sheet to work with the jar
 
