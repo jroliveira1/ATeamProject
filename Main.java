@@ -147,6 +147,7 @@ public class Main extends Application {
 
         TableColumn<FarmData, String> monthCol = new TableColumn<>("Month");
         monthCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("month"));
+        monthCol.setId("hi");
 
         TableColumn<FarmData, String> farmIDCol = new TableColumn<>("FarmID");
         farmIDCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("farmID"));
@@ -244,7 +245,7 @@ public class Main extends Application {
              farmData.getDate().substring(0,4).equals(year) && farmData.getFarmID().equals(farmId)
         ).collect(Collectors.toList());
         System.out.println(farmReport.size());
-        
+
 
         formatedData.setAll(farmReport);
         table.setItems(formatedData);
