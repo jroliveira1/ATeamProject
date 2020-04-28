@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class Main extends Application {
     private Set<FarmData> data = new HashSet<FarmData>();
     private List<FarmData> formatedData = new ArrayList<>();
     private Label minMaxOrAve = new Label();
+    private boolean validFile = true;
 
 
     private static final int WINDOW_WIDTH = 700;
@@ -50,25 +52,8 @@ public class Main extends Application {
 
         // load button for top component
         VBox loadContaner = new VBox();
-        Label dragFile = new Label("Drag and Drop File Here");
-        dragFile.setId("drop");
-        dragFile.setPadding(new Insets(10, 10, 0, 10));
-        dragFile.setOnDragOver(event -> {
-            if (event.getDragboard().hasFiles()) event.acceptTransferModes(TransferMode.COPY);
-        });
-
-        dragFile.setOnDragDropped(event -> {
-            List<File> files = event.getDragboard().getFiles();
-            String filePath;
-            for(int i = 0; i < files.size(); i++){
-                filePath = files.get(i).getAbsolutePath();
-                data.addAll(loadFile(filePath));
-                System.out.println(filePath);
-            }
-
-            table.setItems(FXCollections.observableArrayList(data));
-            System.out.println(data.size());
-        });
+        Label dragFile = makeDragLabel();
+        
 
 
         Separator separator1 = new Separator();
@@ -78,16 +63,14 @@ public class Main extends Application {
         loadContaner.getChildren().addAll(dragFile, minMaxOrAve, separator1);
 
         // make left component
-        AtomicBoolean dragging = new AtomicBoolean(false);
         TabPane leftComponent = makeLeftComponent();
         leftComponent.setPrefWidth(leftCompWidth);
-        // leftComponent.setOnMousePressed(event -> dragging.set(true));
-
-        leftComponent.setOnMouseMoved(event -> {
+        
+        leftComponent.setOnMouseMoved(event -> { // code for dragging left component to the right or left
             if (event.getX() < leftCompWidth - 15 || event.getX() > leftCompWidth + 15) scene.setCursor(Cursor.DEFAULT);
             else scene.setCursor(Cursor.H_RESIZE);
         });
-        leftComponent.setOnMouseDragged(event -> {
+        leftComponent.setOnMouseDragged(event -> { // code for dragging left component to the right or left
             if (scene.getCursor().equals(Cursor.H_RESIZE) && event.getX() > 10 && event.getX() < WINDOW_WIDTH - 10)
                 leftCompWidth = (int) event.getX();
             leftComponent.setPrefWidth(leftCompWidth);
@@ -117,6 +100,43 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    /**
+     * method used to create the label that is used to drag and drop a file
+     * @return
+     */
+    private Label makeDragLabel(){
+        Label dragFile = new Label("Drag and Drop File Here");
+        dragFile.setId("drop");
+        dragFile.setPadding(new Insets(10, 10, 0, 10));
+        dragFile.setOnDragOver(event -> {
+            if (event.getDragboard().hasFiles()) event.acceptTransferModes(TransferMode.COPY);
+        });
+
+        dragFile.setOnDragDropped(event -> {
+            List<File> files = event.getDragboard().getFiles();
+            String filePath;
+
+            // add data in provided files to data set
+            for(int i = 0; i < files.size(); i++){
+                filePath = files.get(i).getAbsolutePath();
+
+                if(validFile) data.addAll(loadFile(filePath));
+
+            }
+            validFile = true;
+
+            table.setItems(FXCollections.observableArrayList(data));
+            System.out.println(data.size());
+        });
+        
+        return dragFile;
+    }
+
+    /**
+     * used to load a file dragged and dropped the the appropriate location
+     * @param inputFilePath
+     * @return
+     */
     private List<FarmData> loadFile(String inputFilePath) {
         List<FarmData> inputList = new ArrayList<>();
         try {
@@ -129,14 +149,21 @@ public class Main extends Application {
             br.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
+
+        } catch (Exception e){
+              Alert invalidFile = new Alert(Alert.AlertType.WARNING, "One or more of the provided files had invalid csv format");
+              invalidFile.showAndWait().filter(alert -> alert == ButtonType.OK);
+              validFile = false;
         }
 
         return inputList;
     }
 
-    private Function<String, FarmData> mapToItem = (line) -> {
+    private Function<String, FarmData> mapToItem  = (line) -> {
 
         String[] curFarm = line.split(COMMA);// a CSV has comma separated lines
+
+
         String[] dateParts = curFarm[0].split("-"); // use to get month which will be at index 1
 
         return new FarmData(curFarm[0], getMonth(Integer.parseInt(dateParts[1])), curFarm[1], Integer.parseInt(curFarm[2]));
@@ -193,29 +220,7 @@ public class Main extends Application {
 
     }
 
-//    private class RowChangeHandler implements
-//            ChangeListener {
-//        @Override
-//        public void changed(ObservableValue ov, Object oldVal,
-//                            Object newVal) {
-//            int val = ((Number) newVal).intValue();
-//            if (data.size() <= 0) {
-//                return;
-//            }
-//            FarmData farmData = (FarmData) data.get(val);
-//            txtStatus.setText(farmData.toString());
-//        }
-//    }
 
-
-    private void dummyData() {
-        data.add(new FarmData("farm1", 2000, "5%"));
-        data.add(new FarmData("2", 6000, "20%"));
-        data.add(new FarmData("3", 3000, "15%"));
-        data.add(new FarmData("4", 4000));
-       // data.get(3).setPercent("50%");
-        data.add(new FarmData("farm5", 40484800));
-    }
 
     private void determineMax() {
         try {
@@ -355,7 +360,7 @@ public class Main extends Application {
 //        data = FXCollections.observableArrayList();
 //        table.setItems(data);
 
-        dummyData();
+
         data.add(new FarmData("Sion's farm", 4558858));
     }
 
@@ -365,6 +370,16 @@ public class Main extends Application {
 
     private void dateRangeReport() {
 
+    }
+
+    private void printReport() throws IOException {
+        FileWriter writer = new FileWriter(System.getProperty("user.dir"));
+        writer.write("date,farm_id,weight\n");
+
+        // write each data element in formatted
+        for(FarmData farm : formatedData){
+            
+        }
     }
 
 
