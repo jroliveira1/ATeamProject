@@ -187,4 +187,8 @@ public class FarmData {
 
         return s;
     }
+
+    public String printToCsvFile(){
+        return getDate() + "," + getFarmID() + "," + getWeight();
+    }
 }
