@@ -1,11 +1,6 @@
 package application;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -24,20 +18,21 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.text.DateFormatSymbols;
 
 import static javafx.scene.control.cell.ChoiceBoxTableCell.forTableColumn;
 
 public class Main extends Application {
     private static final String COMMA = "\\s*,\\s*";
-    private String farmId = "Farm 18"; // used to store farmId user entered
-    private String year = "2019"; // used to store year user entered
-    private String month; // used to store month user entered
+    private String farmIdInput = "Farm 2"; // used to store farmId user entered
+    private String yearInput = "2019"; // used to store year user entered
+    private String monthInput; // used to store month user entered
 
     Scene scene;
 
     private TableView<FarmData> table;
-    private ObservableList<FarmData> data = FXCollections.observableArrayList();
-    private ObservableList<FarmData> formatedData = FXCollections.observableArrayList();
+    private Set<FarmData> data = new HashSet<FarmData>();
+    private List<FarmData> formatedData = new ArrayList<>();
     private Label minMaxOrAve = new Label();
 
 
@@ -64,17 +59,22 @@ public class Main extends Application {
 
         dragFile.setOnDragDropped(event -> {
             List<File> files = event.getDragboard().getFiles();
-            String filePath = new String(files.get(0).getAbsolutePath());
-            System.out.println(filePath);
-            data.setAll(loadFile(filePath));
-            table.setItems(data);
+            String filePath;
+            for(int i = 0; i < files.size(); i++){
+                filePath = files.get(i).getAbsolutePath();
+                data.addAll(loadFile(filePath));
+                System.out.println(filePath);
+            }
 
+            table.setItems(FXCollections.observableArrayList(data));
             System.out.println(data.size());
         });
+
+
         Separator separator1 = new Separator();
-        separator1.setMaxWidth(300);
+        separator1.setMaxWidth(400);
         minMaxOrAve.setId("minMaxOrAve");
-        minMaxOrAve.setPadding(new Insets(5, 0, 0, 300));
+        minMaxOrAve.setPadding(new Insets(5, 0, 0, 30));
         loadContaner.getChildren().addAll(dragFile, minMaxOrAve, separator1);
 
         // make left component
@@ -123,6 +123,7 @@ public class Main extends Application {
             File inputF = new File(inputFilePath);
             InputStream inputFS = new FileInputStream(inputF);
             BufferedReader br = new BufferedReader(new InputStreamReader(inputFS));
+
             // skip the header of the csv
             inputList = br.lines().skip(1).map(mapToItem).collect(Collectors.toList());
             br.close();
@@ -136,18 +137,29 @@ public class Main extends Application {
     private Function<String, FarmData> mapToItem = (line) -> {
 
         String[] curFarm = line.split(COMMA);// a CSV has comma separated lines
+        String[] dateParts = curFarm[0].split("-"); // use to get month which will be at index 1
 
-        return new FarmData(curFarm[0], curFarm[1], Integer.parseInt(curFarm[2]));
+        return new FarmData(curFarm[0], getMonth(Integer.parseInt(dateParts[1])), curFarm[1], Integer.parseInt(curFarm[2]));
 
 
     };
 
+    /**
+     * private method used to return month given an int
+     * @param month
+     */
+    private String getMonth(int month){
+        return new DateFormatSymbols().getMonths()[month-1];
+    }
+
     private void makeTable() {
         table = new TableView<FarmData>();
 
+        TableColumn<FarmData, String> dateCol = new TableColumn<>("Date");
+        dateCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("date"));
+
         TableColumn<FarmData, String> monthCol = new TableColumn<>("Month");
         monthCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("month"));
-        monthCol.setId("hi");
 
         TableColumn<FarmData, String> farmIDCol = new TableColumn<>("FarmID");
         farmIDCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("farmID"));
@@ -159,8 +171,9 @@ public class Main extends Application {
         percentCol.setCellValueFactory(new PropertyValueFactory<FarmData, Integer>("percent"));
 
 
-        table.getColumns().setAll(monthCol, farmIDCol, weightCol, percentCol);
-        table.getColumns().get(3).setVisible(false);
+        table.getColumns().setAll(dateCol,monthCol, farmIDCol, weightCol, percentCol);
+        table.getColumns().get(1).setVisible(false);
+        table.getColumns().get(4).setVisible(false);
 
         // set table properties
         table.setPrefWidth(400);
@@ -200,14 +213,14 @@ public class Main extends Application {
         data.add(new FarmData("2", 6000, "20%"));
         data.add(new FarmData("3", 3000, "15%"));
         data.add(new FarmData("4", 4000));
-        data.get(3).setPercent("50%");
+       // data.get(3).setPercent("50%");
         data.add(new FarmData("farm5", 40484800));
     }
 
     private void determineMax() {
         try {
-            FarmData max = data.stream().max(Comparator.comparing(FarmData::getWeight)).get();
-            minMaxOrAve.setText("Max : " + max);
+            FarmData max = formatedData.stream().max(Comparator.comparing(FarmData::getWeight)).get();
+            minMaxOrAve.setText(max.toString());
         } catch (NoSuchElementException ignored) {
 
         }
@@ -218,7 +231,7 @@ public class Main extends Application {
         try {
             FarmData min = formatedData.stream().min(Comparator.comparing(FarmData::getWeight)).get();
             System.out.println(min);
-            minMaxOrAve.setText("Min : " + min);
+            minMaxOrAve.setText(min.toString());
         } catch (NoSuchElementException ignored) {
 
         }
@@ -229,26 +242,109 @@ public class Main extends Application {
         if (data.size() == 0) return;
 
         double sum = 0;
-        for (int i = 0; i < data.size(); i++) {
-            sum += data.get(i).getWeight();
+
+        for (FarmData farm : formatedData) {
+            sum += farm.getWeight();
         }
 
         minMaxOrAve.setText("Average weight : " + sum / data.size());
     }
 
+    private List<FarmData> makeListForFarmReport(){
+        List<FarmData> weightByMonths = new ArrayList<>();
+        weightByMonths.add(new FarmData("Jan"));
+        weightByMonths.add(new FarmData("Feb"));
+        weightByMonths.add(new FarmData("March"));
+        weightByMonths.add(new FarmData("April"));
+        weightByMonths.add(new FarmData("May"));
+        weightByMonths.add(new FarmData("June"));
+        weightByMonths.add(new FarmData("July"));
+        weightByMonths.add(new FarmData("Aug"));
+        weightByMonths.add(new FarmData("Sep"));
+        weightByMonths.add(new FarmData("Oct"));
+        weightByMonths.add(new FarmData("Nov"));
+        weightByMonths.add(new FarmData("Dec"));
+
+        return weightByMonths;
+    }
+
 
     private void farmReport() {
-        table.getColumns().get(0).setVisible(true);
-        table.getColumns().get(1).setVisible(false);
+        table.getColumns().get(0).setVisible(false); // make date not visible
+        table.getColumns().get(1).setVisible(true); // make month visible
+        table.getColumns().get(2).setVisible(false); // make farmID not visible
 
-        List<FarmData> farmReport = data.stream().filter(farmData ->
-             farmData.getDate().substring(0,4).equals(year) && farmData.getFarmID().equals(farmId)
+        formatedData = data.stream().filter(farmData ->
+             farmData.getDate().substring(0,4).equals(yearInput) && farmData.getFarmID().equals(farmIdInput)
         ).collect(Collectors.toList());
-        System.out.println(farmReport.size());
 
 
-        formatedData.setAll(farmReport);
-        table.setItems(formatedData);
+        List<FarmData> weightByMonths = makeListForFarmReport();
+
+        String[] dateParts;
+
+        System.out.println("farmReport size: " + formatedData.size());
+        for (FarmData farm : formatedData) {
+           dateParts = farm.getDate().split("-");
+            switch (Integer.parseInt(dateParts[1])){
+                case 1:
+                    weightByMonths.get(0).addWeight(farm.getWeight());
+
+                    break;
+                case 2:
+                    weightByMonths.get(1).addWeight(farm.getWeight());
+                    break;
+                case 3:
+                    weightByMonths.get(2).addWeight(farm.getWeight());
+                    break;
+                case 4:
+                    weightByMonths.get(3).addWeight(farm.getWeight());
+                    break;
+                case 5:
+                    weightByMonths.get(4).addWeight(farm.getWeight());
+                    break;
+                case 6:
+                    weightByMonths.get(5).addWeight(farm.getWeight());
+                    break;
+                case 7:
+                    weightByMonths.get(6).addWeight(farm.getWeight());
+                    break;
+                case 8:
+                    weightByMonths.get(7).addWeight(farm.getWeight());
+                    break;
+                case 9:
+                    weightByMonths.get(8).addWeight(farm.getWeight());
+                    break;
+                case 10:
+                    weightByMonths.get(9).addWeight(farm.getWeight());
+                    break;
+                case 11:
+                    weightByMonths.get(10).addWeight(farm.getWeight());
+                    break;
+                case 12:
+                    weightByMonths.get(11).addWeight(farm.getWeight());
+                    break;
+
+            }
+        }
+
+//        boolean containes = false;
+//        for (FarmData farm : farmReport) {
+//            for (FarmData farmInTemp : weightByMonths) {
+//                if(farm.getFarmID().equals(farmInTemp.getFarmID())){
+//                    containes = true;
+//                    farmInTemp.addWeight(farm.getWeight());
+//                }
+//            }
+//            if(!containes){
+//                weightByMonths.add(new FarmData(farm.getDate(), farm.getFarmID(), farm.getWeight()));
+//            }
+//            containes = false;
+//        }
+
+
+
+        table.setItems(FXCollections.observableArrayList(weightByMonths));
     }
 
     private void annualReport() {
@@ -256,8 +352,8 @@ public class Main extends Application {
         table.getColumns().get(0).setVisible(false);
         table.getColumns().get(1).setVisible(true);
 
-        data = FXCollections.observableArrayList();
-        table.setItems(data);
+//        data = FXCollections.observableArrayList();
+//        table.setItems(data);
 
         dummyData();
         data.add(new FarmData("Sion's farm", 4558858));
@@ -300,23 +396,42 @@ public class Main extends Application {
         // farm year and month input
         Insets inputPadd = new Insets(10, 0, 0, 0);
         Label farmId = new Label("Farm ID");
-        TextField farmIdInfo = new TextField();
-        //farmIdInfo.setPadding(new Insets(500));
-        farmIdInfo.setMaxWidth(Double.MAX_VALUE);
+        TextField farmIdIn = new TextField();
+        farmIdIn.setMaxWidth(Double.MAX_VALUE);
+
+        // set listener for reading
+        farmIdIn.setOnAction(event -> {
+            farmIdInput = farmIdIn.getText();
+            farmIdIn.clear();
+        });
+
 
 
         Label year = new Label("Year");
         year.setPadding(inputPadd);
-        TextField yearInput = new TextField();
-        yearInput.setMaxWidth(Double.MAX_VALUE);
+        TextField yearIn = new TextField();
+        yearIn.setMaxWidth(Double.MAX_VALUE);
+
+        // set listener for reading
+        yearIn.setOnAction(event -> {
+            yearInput = yearIn.getText();
+            yearIn.clear();
+        });
+
 
         Label month = new Label("Month");
         month.setPadding(inputPadd);
         TextField monthIn = new TextField();
         monthIn.setMaxWidth(Double.MAX_VALUE);
 
+        // set listener for reading
+        monthIn.setOnAction(event -> {
+            monthInput = monthIn.getText();
+            monthIn.clear();
+        });
+
         VBox searchDataHolder = new VBox();
-        searchDataHolder.getChildren().addAll(farmId, farmIdInfo, year, yearInput, month, monthIn);
+        searchDataHolder.getChildren().addAll(farmId, farmIdIn, year, yearIn, month, monthIn);
         searchDataHolder.setAlignment(Pos.CENTER_LEFT);
         searchDataHolder.setPadding(new Insets(0, 60, 0, 20));
 
