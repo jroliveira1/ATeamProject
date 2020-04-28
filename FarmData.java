@@ -5,14 +5,16 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.Objects;
+
 /**
  * public class that is used to represent the data stored in all 4 types of data reports
  */
 public class FarmData {
-    private SimpleStringProperty date;
-    private SimpleStringProperty month;
-    private SimpleStringProperty farmID;
-    private SimpleIntegerProperty weight;
+    private SimpleStringProperty date = new SimpleStringProperty("");
+    private SimpleStringProperty month = new SimpleStringProperty("");
+    private SimpleStringProperty farmID = new SimpleStringProperty("");
+    private SimpleIntegerProperty weight = new SimpleIntegerProperty(0);;
     private SimpleStringProperty percent;
 
     public FarmData(Integer weight, String month) {
@@ -25,16 +27,37 @@ public class FarmData {
         this.percent = new SimpleStringProperty(percent);
     }
 
-    public FarmData(String date, String farmID, Integer weight){
+    /**
+     * constructor used for reading from file
+     * @param date
+     * @param farmID
+     * @param weight
+     */
+    public FarmData(String date, String month, String farmID, Integer weight){
         this.date = new SimpleStringProperty(date);
+        this.month = new SimpleStringProperty(month);
         this.farmID = new SimpleStringProperty(farmID);
         this.weight = new SimpleIntegerProperty(weight);
     }
 
+    /**
+     * used for farm report
+     * @param farmID
+     * @param weight
+     */
     public FarmData(String farmID, Integer weight) {
         this.farmID = new SimpleStringProperty(farmID);
         this.weight = new SimpleIntegerProperty(weight);
     }
+
+    /**
+     * used for farm report
+     * @param month
+     */
+    public FarmData(String month) {
+        this.month= new SimpleStringProperty(month);
+    }
+
     public FarmData(String farmID, Integer weight, String percent) {
         this.farmID = new SimpleStringProperty(farmID);
         this.weight = new SimpleIntegerProperty(weight);
@@ -45,6 +68,24 @@ public class FarmData {
 
     }
 
+    @Override
+    /**
+     * used farm ID
+     */
+    public boolean equals(Object o){
+        if(o == null) return false;
+        if(this == o) return false;
+        if(!(o instanceof FarmData)) return false;
+        FarmData other = (FarmData) o;
+        if(this.getDate().equals(other.getDate()) && this.getWeight().equals(other.getWeight()) && this.getFarmID().equals(other.getFarmID())) return true;
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getWeight().hashCode();
+    }
+
 
     // methods for date
     public void setDate(String date) {
@@ -53,7 +94,7 @@ public class FarmData {
     }
 
     public String getDate() {
-        if (this.date == null) this.date = new SimpleStringProperty();
+        if (this.date == null) this.date = new SimpleStringProperty("");
         return this.date.get();
     }
 
@@ -111,6 +152,13 @@ public class FarmData {
         return weight;
     }
 
+    public void addWeight(Integer additional){
+        if(weight == null) weight = new SimpleIntegerProperty();
+
+        // for some reason add doesn't function as expected so did this instead
+        weight.set(weight.get() + additional);
+    }
+
 
     // methods for percent field
 
@@ -131,10 +179,11 @@ public class FarmData {
     @Override
     public String toString() {
         String s = "";
-        if(farmID != null) s += "FarmID " + farmID.get() + "   ";
-        if(month != null) s += "Month " + month.get() + "   ";
-        if(weight != null) s += "Weight " + weight.get() + "   ";
-        if(percent != null) s += "Percent " + percent.get() + "   ";
+        if(date != null || !date.get().equals("")) s+= "Date: " + date.get() + "   ";
+        if(farmID != null) s += "FarmID: " + farmID.get() + "   ";
+        //if(month != null) s += "Month: " + month.get() + "   ";
+        if(weight != null) s += "Weight: " + weight.get() + "   ";
+        if(percent != null) s += "Percent: " + percent.get() + "   ";
 
         return s;
     }
