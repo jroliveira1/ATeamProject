@@ -9,6 +9,7 @@ import javafx.beans.property.StringProperty;
  * public class that is used to represent the data stored in all 4 types of data reports
  */
 public class FarmData {
+    private SimpleStringProperty date;
     private SimpleStringProperty month;
     private SimpleStringProperty farmID;
     private SimpleIntegerProperty weight;
@@ -24,6 +25,12 @@ public class FarmData {
         this.percent = new SimpleStringProperty(percent);
     }
 
+    public FarmData(String date, String farmID, Integer weight){
+        this.date = new SimpleStringProperty(date);
+        this.farmID = new SimpleStringProperty(farmID);
+        this.weight = new SimpleIntegerProperty(weight);
+    }
+
     public FarmData(String farmID, Integer weight) {
         this.farmID = new SimpleStringProperty(farmID);
         this.weight = new SimpleIntegerProperty(weight);
@@ -34,15 +41,35 @@ public class FarmData {
         this.percent = new SimpleStringProperty(percent);
     }
 
+    public FarmData() {
 
+    }
+
+
+    // methods for date
+    public void setDate(String date) {
+        if (this.month == null) this.month = new SimpleStringProperty(date);
+        this.month.set(date);
+    }
+
+    public String getDate() {
+        if (this.date == null) this.date = new SimpleStringProperty();
+        return this.date.get();
+    }
+
+    public StringProperty dateProperty() {
+        return date;
+    }
+
+    // method for month
     public void setMonth(String month) {
         if (this.month == null) this.month = new SimpleStringProperty(month);
         this.month.set(month);
     }
 
-    public void getMonth() {
+    public String getMonth() {
         if (this.month == null) this.month = new SimpleStringProperty();
-        this.month.get();
+       return this.month.get();
     }
 
     public StringProperty monthProperty() {
