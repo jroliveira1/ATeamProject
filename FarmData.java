@@ -4,18 +4,20 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 /**
  * public class that is used to represent the data stored in all 4 types of data reports
  */
-public class FarmData {
+public class FarmData implements Comparable <FarmData>{
     private SimpleStringProperty date = new SimpleStringProperty("");
     private SimpleStringProperty month = new SimpleStringProperty("");
     private SimpleStringProperty farmID = new SimpleStringProperty("");
     private SimpleIntegerProperty weight = new SimpleIntegerProperty(0);;
-    private SimpleStringProperty percent = new SimpleStringProperty("n/a");
+    private SimpleStringProperty percent;
 
     public FarmData(Integer weight, String month) {
         this.month = new SimpleStringProperty(month);
@@ -165,7 +167,7 @@ public class FarmData {
 
     public void setPercent(String percent) {
         if(this.percent == null) this.percent = new SimpleStringProperty();
-        this.percent.setValue(percent);
+        this.percent.set(percent);
     }
 
     public String getPercent() {
@@ -191,4 +193,21 @@ public class FarmData {
     public String printToCsvFile(){
         return getDate() + "," + getFarmID() + "," + getWeight();
     }
+    
+    public int getFarmIDValue() {
+      return Integer.parseInt(this.getFarmID().substring(5).trim());
+    }
+    
+    @Override
+    public int compareTo(FarmData o) {
+      // TODO Auto-generated method stub
+      Integer comp1 = Integer.parseInt(this.getFarmID().substring(5).trim());
+      Integer comp2 = Integer.parseInt(o.getFarmID().substring(5).trim());
+      return comp1.compareTo(comp2);
+    }
+    public static void main(String[] args) {
+     
+      
+  }
+    
 }
