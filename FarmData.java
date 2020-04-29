@@ -15,7 +15,7 @@ public class FarmData {
     private SimpleStringProperty month = new SimpleStringProperty("");
     private SimpleStringProperty farmID = new SimpleStringProperty("");
     private SimpleIntegerProperty weight = new SimpleIntegerProperty(0);;
-    private SimpleStringProperty percent;
+    private SimpleStringProperty percent = new SimpleStringProperty("n/a");
 
     public FarmData(Integer weight, String month) {
         this.month = new SimpleStringProperty(month);
@@ -165,7 +165,7 @@ public class FarmData {
 
     public void setPercent(String percent) {
         if(this.percent == null) this.percent = new SimpleStringProperty();
-        this.percent.set(percent);
+        this.percent.setValue(percent);
     }
 
     public String getPercent() {

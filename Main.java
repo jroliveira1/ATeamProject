@@ -2,7 +2,6 @@ package application;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -14,19 +13,19 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
 
 import static javafx.scene.control.cell.ChoiceBoxTableCell.forTableColumn;
 
 public class Main extends Application {
     private static final String COMMA = "\\s*,\\s*";
-    private String farmIdInput = "Farm 2"; // used to store farmId user entered
-    private String yearInput = "2019"; // used to store year user entered
+    private String farmIdInput; // used to store farmId user entered
+    private String yearInput; // used to store year user entered
     private String monthInput; // used to store month user entered
 
     Scene scene;
@@ -38,7 +37,7 @@ public class Main extends Application {
     private boolean validFile = true;
 
 
-    private static final int WINDOW_WIDTH = 700;
+    private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 700;
     private int leftCompWidth = 200;
     private int prefButtonWidth = 200;
@@ -126,6 +125,11 @@ public class Main extends Application {
             validFile = true;
 
             table.setItems(FXCollections.observableArrayList(data));
+            table.getColumns().get(0).setVisible(true);
+            table.getColumns().get(1).setVisible(false);
+            table.getColumns().get(2).setVisible(true);
+            table.getColumns().get(3).setVisible(true);
+            table.getColumns().get(4).setVisible(false);
             System.out.println(data.size());
         });
         
@@ -155,7 +159,7 @@ public class Main extends Application {
               invalidFile.showAndWait().filter(alert -> alert == ButtonType.OK);
               validFile = false;
         }
-
+        
         return inputList;
     }
 
@@ -194,8 +198,8 @@ public class Main extends Application {
         TableColumn<FarmData, Integer> weightCol = new TableColumn<>("Weight");
         weightCol.setCellValueFactory(new PropertyValueFactory<FarmData, Integer>("weight"));
 
-        TableColumn<FarmData, Integer> percentCol = new TableColumn<>("Percent");
-        percentCol.setCellValueFactory(new PropertyValueFactory<FarmData, Integer>("percent"));
+        TableColumn<FarmData, String> percentCol = new TableColumn<>("Percent");
+        percentCol.setCellValueFactory(new PropertyValueFactory<FarmData, String>("percent"));
 
 
         table.getColumns().setAll(dateCol,monthCol, farmIDCol, weightCol, percentCol);
@@ -255,6 +259,22 @@ public class Main extends Application {
         minMaxOrAve.setText("Average weight : " + sum / data.size());
     }
 
+    private void setPercent(List<FarmData> farmData){
+
+        double sum = 0;
+
+        for (FarmData farm : formatedData) {
+            sum += farm.getWeight();
+        }
+
+        DecimalFormat  df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.DOWN);
+        for(FarmData farm : farmData) {
+            farm.setPercent(df.format((farm.getWeight() / sum) * 100) + "%"); // format decimal for %
+        }
+
+    }
+
     private List<FarmData> makeListForFarmReport(){
         List<FarmData> weightByMonths = new ArrayList<>();
         weightByMonths.add(new FarmData("Jan"));
@@ -274,13 +294,13 @@ public class Main extends Application {
     }
 
 
-    private void farmReport() {
+    private void farmReport() throws IOException {
         table.getColumns().get(0).setVisible(false); // make date not visible
         table.getColumns().get(1).setVisible(true); // make month visible
         table.getColumns().get(2).setVisible(false); // make farmID not visible
 
         formatedData = data.stream().filter(farmData ->
-             farmData.getDate().substring(0,4).equals(yearInput) && farmData.getFarmID().equals(farmIdInput)
+             farmData.getDate().substring(0,4).equalsIgnoreCase(yearInput) && farmData.getFarmID().equals(farmIdInput)
         ).collect(Collectors.toList());
 
 
@@ -290,6 +310,7 @@ public class Main extends Application {
 
         System.out.println("farmReport size: " + formatedData.size());
         for (FarmData farm : formatedData) {
+
            dateParts = farm.getDate().split("-");
             switch (Integer.parseInt(dateParts[1])){
                 case 1:
@@ -346,10 +367,11 @@ public class Main extends Application {
 //            }
 //            containes = false;
 //        }
-
+       setPercent(weightByMonths);
 
 
         table.setItems(FXCollections.observableArrayList(weightByMonths));
+        printReport();
     }
 
     private void annualReport() {
@@ -373,13 +395,16 @@ public class Main extends Application {
     }
 
     private void printReport() throws IOException {
-        FileWriter writer = new FileWriter(System.getProperty("user.dir"));
+        File newFile = new File(System.getProperty("user.dir") );
+        File newFile2 = new File("C:\\Users\\sionc\\Downloads\\Temp\\testing.csv");
+        FileWriter writer = new FileWriter(newFile2);
         writer.write("date,farm_id,weight\n");
 
         // write each data element in formatted
         for(FarmData farm : formatedData){
-            
+            writer.write(farm.printToCsvFile() + "\n");
         }
+        writer.close();
     }
 
 
@@ -465,8 +490,8 @@ public class Main extends Application {
 
         ToggleButton percentTog = new ToggleButton();
         percentTog.setOnAction(event -> {
-            if (percentTog.isSelected()) table.getColumns().get(3).setVisible(true);
-            else table.getColumns().get(3).setVisible(false);
+            if (percentTog.isSelected()) table.getColumns().get(4).setVisible(true);
+            else table.getColumns().get(4).setVisible(false);
         });
 
 
@@ -528,7 +553,13 @@ public class Main extends Application {
         Button farmReport = new Button("Farm Report");
         //  farmReport.setPrefWidth(prefButtonWidth);
         farmReport.setMaxWidth(Double.MAX_VALUE);
-        farmReport.setOnAction(event -> farmReport());
+        farmReport.setOnAction(event -> {
+            try {
+                farmReport();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         Button annualReport = new Button("Annual Report");
         annualReport.setMaxWidth(Double.MAX_VALUE);
@@ -624,124 +655,5 @@ public class Main extends Application {
         launch(args);
     }
 
-//     class FarmData {
-//        private SimpleStringProperty date;
-//        private SimpleStringProperty month;
-//        private SimpleStringProperty farmID;
-//        private SimpleIntegerProperty weight;
-//        private SimpleStringProperty percent;
-//
-//        private FarmData(Integer weight, String month) {
-//            this.month = new SimpleStringProperty(month);
-//            this.weight = new SimpleIntegerProperty(weight);
-//        }
-//
-//        private FarmData(Integer weight, String month, String percent) {
-//            this.month = new SimpleStringProperty(month);
-//            this.weight = new SimpleIntegerProperty(weight);
-//            this.percent = new SimpleStringProperty(percent);
-//        }
-//
-//        private FarmData(String date, String farmID, Integer weight) {
-//            this.date = new SimpleStringProperty(date);
-//            this.farmID = new SimpleStringProperty(farmID);
-//            this.weight = new SimpleIntegerProperty(weight);
-//        }
-//
-//        private FarmData(String farmID, Integer weight) {
-//            this.farmID = new SimpleStringProperty(farmID);
-//            this.weight = new SimpleIntegerProperty(weight);
-//        }
-//
-//        private FarmData(String farmID, Integer weight, String percent) {
-//            this.farmID = new SimpleStringProperty(farmID);
-//            this.weight = new SimpleIntegerProperty(weight);
-//            this.percent = new SimpleStringProperty(percent);
-//        }
-//
-//        private FarmData() {
-//
-//        }
-//
-//
-//        private void setMonth(String month) {
-//            if (this.month == null) this.month = new SimpleStringProperty(month);
-//            this.month.set(month);
-//        }
-//
-//        private void getMonth() {
-//            if (this.month == null) this.month = new SimpleStringProperty();
-//            this.month.get();
-//        }
-//
-//        private StringProperty monthProperty() {
-//            return month;
-//        }
-//
-//
-//        // methods for farmID field
-//        private void setFarmID(String farmID) {
-//            if (this.farmID == null) this.farmID = new SimpleStringProperty(farmID);
-//            this.farmID.set(farmID);
-//        }
-//
-//        private String getFarmID() {
-//            if (this.farmID == null) this.farmID = new SimpleStringProperty();
-//            return farmID.get();
-//        }
-//
-//        private SimpleStringProperty farmIDProperty() {
-//            return farmID;
-//        }
-//
-//
-//        // methods for weight field
-//
-//        /**
-//         * sets weight will never be null since no every constructor required a weight
-//         *
-//         * @param weight
-//         */
-//        private void setWeight(Integer weight) {
-//            this.weight.set(weight);
-//        }
-//
-//        private Integer getWeight() {
-//            return weight.get();
-//        }
-//
-//        private SimpleIntegerProperty weightProperty() {
-//            return weight;
-//        }
-//
-//
-//        // methods for percent field
-//
-//
-//        private void setPercent(String percent) {
-//            if (this.percent == null) this.percent = new SimpleStringProperty();
-//            this.percent.set(percent);
-//        }
-//
-//        private String getPercent() {
-//            return percent.get();
-//        }
-//
-//        private SimpleStringProperty percentProperty() {
-//            return percent;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            String s = "";
-//            if (farmID != null) s += "FarmID " + farmID.get() + "   ";
-//            if (month != null) s += "Month " + month.get() + "   ";
-//            if (weight != null) s += "Weight " + weight.get() + "   ";
-//            if (percent != null) s += "Percent " + percent.get() + "   ";
-//
-//            return s;
-//        }
-//
-//
-//    }
+
 }

@@ -37,6 +37,8 @@
 #drop{
     -fx-font-weight: bold;
     -fx-font-size: 20px;
+    -fx-background-color: lightblue;
+
 }
 
 .text-field{
@@ -55,7 +57,10 @@
     -fx-background-color: lightblue;
     -fx-border-color: black;
     -fx-text-fill: black;
+}
 
+.table-column:hover{
+    -fx-background-color: skyblue;
 }
 
 /*.table-column:focused{*/
