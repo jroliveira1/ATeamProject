@@ -15,7 +15,9 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -99,6 +101,8 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+
+
     /**
      * method used to create the label that is used to drag and drop a file
      * @return
@@ -159,7 +163,7 @@ public class Main extends Application {
               invalidFile.showAndWait().filter(alert -> alert == ButtonType.OK);
               validFile = false;
         }
-        
+
         return inputList;
     }
 
@@ -387,9 +391,40 @@ public class Main extends Application {
     }
 
     private void monthlyReport() {
+        table.getColumns().get(0).setVisible(false);
+        table.getColumns().get(1).setVisible(true);
+
+        System.out.println("hello");
+
+        formatedData = data.stream().filter(farmData ->
+                farmData.getDate().substring(0,4).equalsIgnoreCase(yearInput) && farmData.getMonth().equals(monthInput)
+        ).collect(Collectors.toList()); // filtered out all entries without the desired year and month
+
+        List<FarmData> monthFormat = formatedData.stream().filter(distinctByFarmId(FarmData::getFarmID)).collect(Collectors.toList());
+
+        for (FarmData farm : monthFormat) {
+            farm.setWeight(0);
+            System.out.println(farm.getFarmID());
+        }
+
+        for(FarmData farm : formatedData){
+            
+        }
+
 
     }
 
+    public static <T> Predicate<T> distinctByFarmId(
+            Function<? super T, ?> keyExtractor) {
+
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
+
+//    List<Person> personListFiltered = personList.stream()
+//            .filter(distinctByKey(p -> p.getName()))
+//            .collect(Collectors.toList());
     private void dateRangeReport() {
 
     }
@@ -567,6 +602,8 @@ public class Main extends Application {
 
         Button monthReport = new Button("Monthly Report");
         monthReport.setMaxWidth(Double.MAX_VALUE);
+        monthReport.setOnAction(event -> monthlyReport());
+
         reportHolder.getChildren().addAll(farmReport, annualReport, monthReport);
         // HBox.setHgrow(farmReport, Priority.ALWAYS);
 
