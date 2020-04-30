@@ -109,7 +109,6 @@ public class FileManager {
 			for (FarmData farm : data) {
 				outputFile.write(farm.getFarmID() + ", " + farm.getWeight() + ", " + farm.getPercent() + "\n");
 			}
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

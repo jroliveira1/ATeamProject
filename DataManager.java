@@ -306,7 +306,6 @@ public class DataManager {
 
 		table.setItems(FXCollections.observableArrayList(annualFarmWeight));
 		printReport();
-
 	}
 
 	static <T> Predicate<T> distinctByFarmId(Function<? super T, ?> keyExtractor) {

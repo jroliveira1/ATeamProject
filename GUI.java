@@ -271,12 +271,11 @@ public class GUI {
 		maxTog.setToggleGroup(group);
 		averageTog.setToggleGroup(group);
 
-		// report type buttons
+		// Report type buttons
 		reportHolder = new VBox(5);
 		reportHolder.setPadding(new Insets(30, 0, 10, 0));
 
 		Button farmReport = new Button("Farm Report");
-		// farmReport.setPrefWidth(prefButtonWidth);
 		farmReport.setMaxWidth(Double.MAX_VALUE);
 		farmReport.setOnAction(event -> {
 			try {
