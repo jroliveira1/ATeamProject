@@ -844,22 +844,26 @@ public class Main extends Application {
                 if (farmIdInput != null) {
                     System.out.println("DEBUG Farm Report: " + farmIdInput);
                     if (yearInput != null) {
-                        farmReport();
-                        requiredHider(farmIdInField, requiredFarmID, farmId);
-                        requiredHider(monthInField, requiredMonth, month);
-                        requiredHider(yearInField, requiredYear, year);
-                        requiredHider(startDateInField, requiredDate1, start);
-                        requiredHider(endDateInField, requiredDate1, end);
-                        monthInField.clear();
-                        startDateInField.clear();
-                        endDateInField.clear();
-                        monthInput = null;
-                        startDateInput = null;
-                        endDateInput = null;
+                        if(farmIdInput != null)
+                        {
+                            farmReport();
+                            requiredHider(farmIdInField, requiredFarmID, farmId);
+                            requiredHider(monthInField, requiredMonth, month);
+                            requiredHider(yearInField, requiredYear, year);
+                            requiredHider(startDateInField, requiredDate1, start);
+                            requiredHider(endDateInField, requiredDate1, end);
+                            monthInField.clear();
+                            startDateInField.clear();
+                            endDateInField.clear();
+                            monthInput = null;
+                            startDateInput = null;
+                            endDateInput = null;
+                        }
                     }
                 } else {
                     requiredDisplay(farmIdInField, requiredFarmID, farmId);
                     if(yearInput == null) requiredDisplay(yearInField, requiredYear, year);
+                    
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
