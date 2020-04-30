@@ -179,19 +179,34 @@ public class Main extends Application {
     private HBox makeTopComponents(VBox loadContainer)
     {
         HBox top = new HBox();
+        VBox clearStack = new VBox();
+        
         Button originalData = new Button ("Display Original Data");
+        
+        Button clearData = new Button("Clear Loaded Data");
         
         Region spacer = new Region();
         spacer.setPrefWidth(370); 
-        VBox.setVgrow(spacer, Priority.ALWAYS);
+        HBox.setHgrow(spacer,Priority.ALWAYS);
         
         originalData.setStyle("-fx-focus-color: lightblue;");
+        clearData.setStyle("-fx-focus-color: lightblue;");
         
+        clearData.setMaxWidth(Double.MAX_VALUE);
         originalData.setMaxWidth(Double.MAX_VALUE);
+        
+        clearData.setOnAction(event -> {
+            data.clear();
+            table.setItems(FXCollections.observableArrayList(data));
+        });
+        
         originalData.setOnAction(event -> {
             table.setItems(FXCollections.observableArrayList(data));
         });
-        top.getChildren().addAll(loadContainer, spacer, originalData);
+        
+        clearStack.getChildren().addAll(originalData, clearData);
+        
+        top.getChildren().addAll(loadContainer, spacer, clearStack);
         
         return top;
         
