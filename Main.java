@@ -892,7 +892,7 @@ public class Main extends Application {
                     startDateInput = null;
                     endDateInput = null;
                 } else {
-                    if(yearInput == null)  requiredDisplay(yearInField, requiredYear, year);
+                    requiredDisplay(yearInField, requiredYear, year);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
@@ -926,7 +926,7 @@ public class Main extends Application {
                         endDateInput = null;
                 } else {
                     requiredDisplay(monthInField, requiredMonth, month);
-                    requiredDisplay(yearInField, requiredYear, year);
+                    if(yearInput == null)     requiredDisplay(yearInField, requiredYear, year);
                     requiredHider(farmIdInField, requiredFarmID, farmId);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
