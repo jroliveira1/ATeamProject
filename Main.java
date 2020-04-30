@@ -864,6 +864,7 @@ public class Main extends Application {
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
+                    if(farmIdInput != null) requiredHider(farmIdInField, requiredFarmID, farmId);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -892,7 +893,7 @@ public class Main extends Application {
                     startDateInput = null;
                     endDateInput = null;
                 } else {
-                    requiredDisplay(yearInField, requiredYear, year);
+                    if(yearInput == null)  requiredDisplay(yearInField, requiredYear, year);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
@@ -926,10 +927,11 @@ public class Main extends Application {
                         endDateInput = null;
                 } else {
                     requiredDisplay(monthInField, requiredMonth, month);
-                    if(yearInput == null)     requiredDisplay(yearInField, requiredYear, year);
+                    requiredDisplay(yearInField, requiredYear, year); 
                     requiredHider(farmIdInField, requiredFarmID, farmId);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
+                    if(monthInput != null) requiredHider(monthInField, requiredMonth, month);
                 }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
