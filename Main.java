@@ -723,9 +723,9 @@ public class Main extends Application {
     requiredFarmID.setPadding(new Insets(0,0,0,5));
 
     // set listener for reading
-    farmIdIn.setOnAction(event -> {
-      farmIdInput = farmIdIn.getText();
-      farmIdIn.clear();
+    farmIdIn.textProperty().addListener((obs, oldText, newText) -> {
+        System.out.println("Text changed from "+oldText+" to "+newText);
+        farmIdInput = farmIdIn.getText();
     });
 
     
@@ -738,11 +738,12 @@ public class Main extends Application {
     requiredYear.setPadding(requiredPadd);
     TextField yearIn = new TextField();
     yearIn.setMaxWidth(Double.MAX_VALUE);
-
+    
     // set listener for reading
-    yearIn.setOnAction(event -> {
-      yearInput = yearIn.getText();
-      yearIn.clear();
+   yearIn.textProperty().addListener((obs, oldText, newText) -> {
+        System.out.println("Text changed from "+oldText+" to "+newText);
+        yearInput = yearIn.getText();
+      //yearIn.clear();
     });
 
 
@@ -756,9 +757,9 @@ public class Main extends Application {
     monthIn.setMaxWidth(Double.MAX_VALUE);
 
     // set listener for reading
-    monthIn.setOnAction(event -> {
-      monthInput = monthIn.getText();
-      monthIn.clear();
+    monthIn.textProperty().addListener((obs, oldText, newText) -> {
+        System.out.println("Text changed from "+oldText+" to "+newText);
+        monthInput = monthIn.getText();
     });
 
     HBox yearRequiredHolder = new HBox();
@@ -862,14 +863,18 @@ public class Main extends Application {
       try {
           if(farmIdInput!=null)
           {
-              farmReport();
-              requiredHider(farmIdIn, requiredFarmID, farmId);
-              requiredHider(monthIn, requiredMonth, month);
-              requiredHider(yearIn, requiredYear, year);
+              if(yearInput != null)
+              {
+                  farmReport();
+                  requiredHider(farmIdIn, requiredFarmID, farmId);
+                  requiredHider(monthIn, requiredMonth, month);
+                  requiredHider(yearIn, requiredYear, year);
+              }
           }
           else
           {
               requiredDisplay(farmIdIn, requiredFarmID, farmId);
+              requiredDisplay(yearIn, requiredYear, year);
           }
       } catch (IOException e) {
         e.printStackTrace();
@@ -889,11 +894,7 @@ public class Main extends Application {
         }
         else
         {
-            requiredYear.setVisible(true);
-            yearIn.setStyle("-fx-text-inner-color: red");
-            yearIn.setStyle("-fx-text-box-border: red ;");
-            yearIn.setStyle("-fx-focus-color: red ;");
-            year.setTextFill(Color.web("#FF0000"));
+            requiredDisplay(yearIn, requiredYear, year);
         }
 
       } catch (IOException e) {
@@ -908,19 +909,18 @@ public class Main extends Application {
       try {
           if(monthInput!=null)
           {
-              monthlyReport();
-              requiredMonth.setVisible(true);
-              requiredHider(farmIdIn, requiredFarmID, farmId);
-              requiredHider(monthIn, requiredMonth, month);
-              requiredHider(yearIn, requiredYear, year);
-          }
+              if(yearInput!=null)
+              {
+                  monthlyReport();
+                  requiredHider(farmIdIn, requiredFarmID, farmId);
+                  requiredHider(monthIn, requiredMonth, month);
+                  requiredHider(yearIn, requiredYear, year);
+              }
+          } 
           else
           {
-              requiredMonth.setVisible(true);
-              monthIn.setStyle("-fx-text-inner-color: red");
-              monthIn.setStyle("-fx-text-box-border: red ;");
-              monthIn.setStyle("-fx-focus-color: red ;");
-              month.setTextFill(Color.web("#FF0000"));
+              requiredDisplay(monthIn, requiredMonth, month);
+              requiredDisplay(yearIn, requiredYear, year);
           }
       }
       catch (IOException e) {
@@ -937,33 +937,45 @@ public class Main extends Application {
     VBox startHolder = new VBox(5);
     VBox endHolder = new VBox(5);
     HBox datesHold = new HBox(5);
+    VBox d = new VBox(5);
     Label start = new Label("Start Date");
     TextField startDate = new TextField();
+    Label requiredDate1 = new Label ("*Required");
+    Label requiredDate2 = new Label ("*Required");
+    requiredDate1.setTextFill(Color.web("#FF0000"));
+    requiredDate1.setVisible(false);
+    requiredDate2.setVisible(false);
     startDate.setMaxWidth(Double.MAX_VALUE);
     // set listener for reading
-    startDate.setOnAction(event -> {
-      startDateInput = startDate.getText();
-      startDate.clear();
+    startDate.textProperty().addListener((obs, oldText, newText) -> {
+        System.out.println("Text changed from "+oldText+" to "+newText);
+        startDateInput = startDate.getText();
     });
+    
+    
 
     TextField endDate = new TextField();
     Label end = new Label("End Date");
     endDate.setMaxWidth(Double.MAX_VALUE);
     // set listener for reading
-    endDate.setOnAction(event -> {
-      endDateInput = endDate.getText();
-      endDate.clear();
+    yearIn.textProperty().addListener((obs, oldText, newText) -> {
+        System.out.println("Text changed from "+oldText+" to "+newText);
+        endDateInput = endDate.getText();
     });
 
 
     Label dash = new Label("-");
+    Label filler = new Label("-");
+    
+    filler.setVisible(false);
     dash.setPadding(new Insets(25, 5, 0, 5));
+    d.getChildren().addAll(filler, dash);
     endDate.setMaxWidth(Double.MAX_VALUE);
-    startHolder.getChildren().addAll(start, startDate);
+    startHolder.getChildren().addAll(requiredDate1, start, startDate);
     startHolder.setPadding(new Insets(0, 0, 0, 10));
-    endHolder.getChildren().addAll(end, endDate);
+    endHolder.getChildren().addAll(requiredDate2, end, endDate);
     endHolder.setPadding(new Insets(0, 10, 0, 0));
-    datesHold.getChildren().addAll(startHolder, dash, endHolder);
+    datesHold.getChildren().addAll(startHolder, d, endHolder);
     datesHold.setAlignment(Pos.BASELINE_CENTER);
     datesHold.setMaxWidth(Double.MAX_VALUE);
 
@@ -976,7 +988,20 @@ public class Main extends Application {
     rangeHolder.setPadding(new Insets(5, 0, 0, 0));
     rangeReport.setOnAction(event -> {
       try {
-        dateRangeReport();
+          if(startDateInput!=null)
+          {
+              requiredHider(farmIdIn, requiredFarmID, farmId);
+              requiredHider(monthIn, requiredMonth, month);
+              requiredHider(yearIn, requiredYear, year);
+              requiredHider(startDate, requiredDate1, start);
+              requiredHider(endDate, requiredDate1, end);
+              dateRangeReport();
+          }
+          else
+          {
+              requiredDisplay(startDate, requiredDate1, start);
+              requiredDisplay(endDate, requiredDate1, end);
+          }
       } catch (IOException e) {
         System.out.println(e.getMessage());
         e.printStackTrace();
