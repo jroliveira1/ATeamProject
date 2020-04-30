@@ -360,7 +360,7 @@ public class Main extends Application {
 
         formatedData = data.stream()
                 .filter(farmData -> farmData.getDate().substring(0, 4).equalsIgnoreCase(yearInput)
-                        && farmData.getFarmID().equals(farmIdInput))
+                        && farmData.getFarmID().equalsIgnoreCase(farmIdInput))
                 .collect(Collectors.toList());
 
 
@@ -501,7 +501,6 @@ public class Main extends Application {
         table.getColumns().get(1).setVisible(false); // make month
         table.getColumns().get(2).setVisible(true); // make farmID
         table.getColumns().get(3).setVisible(true); //make weight
-        // data.add(new FarmData("Sion's farm", 4558858));
 
         List<FarmData> annualFarmWeight = new ArrayList<>();
 
@@ -844,6 +843,9 @@ public class Main extends Application {
                         monthInField.clear();
                         startDateInField.clear();
                         endDateInField.clear();
+                        monthInput = null;
+                        startDateInput = null;
+                        endDateInput = null;
                     }
                 } else {
                     requiredDisplay(farmIdInField, requiredFarmID, farmId);
@@ -876,6 +878,8 @@ public class Main extends Application {
                     monthInField.clear();
                     farmIdInput = null;
                     monthInput = null;
+                    startDateInput = null;
+                    endDateInput = null;
                 } else {
                     requiredDisplay(yearInField, requiredYear, year);
                     requiredHider(startDateInField, requiredDate1, start);
@@ -905,6 +909,10 @@ public class Main extends Application {
                         startDateInField.clear();
                         endDateInField.clear();
                         monthlyReport();
+
+                        farmIdInput = null;
+                        startDateInput = null;
+                        endDateInput = null;
                     }
                 } else {
                     requiredDisplay(monthInField, requiredMonth, month);
