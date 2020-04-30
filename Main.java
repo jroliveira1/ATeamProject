@@ -84,7 +84,7 @@ public class Main extends Application {
 
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 700;
-    private int leftCompWidth = 200;
+    private int leftCompWidth = 222;
     private int prefButtonWidth = 200;
     private static final String APP_TITLE = "Milk Weight Analyzer";
 
@@ -720,7 +720,7 @@ public class Main extends Application {
         Label month = new Label("Month");
         month.setPadding(inputPadd);
         TextField monthInField = new TextField();
-        Label requiredMonth = new Label("*Required");
+        Label requiredMonth = new Label("*Required 1-12");
         requiredMonth.setTextFill(Color.web("#FF0000"));
         requiredMonth.setVisible(false);
         requiredMonth.setPadding(requiredPadd);
