@@ -841,10 +841,8 @@ public class Main extends Application {
         farmReport.setMaxWidth(Double.MAX_VALUE);
         farmReport.setOnAction(event -> {
             try {
-                if (farmIdInput != null) {
+                if (farmIdInput != null && yearInput != null) {
                     System.out.println("DEBUG Farm Report: " + farmIdInput);
-                    if (yearInput != null) {
-                        if(farmIdInput != null)
                         {
                             farmReport();
                             requiredHider(farmIdInField, requiredFarmID, farmId);
@@ -859,11 +857,10 @@ public class Main extends Application {
                             startDateInput = null;
                             endDateInput = null;
                         }
-                    }
                 } else {
                     requiredDisplay(farmIdInField, requiredFarmID, farmId);
                     if(yearInput == null) requiredDisplay(yearInField, requiredYear, year);
-                    
+
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
@@ -895,7 +892,7 @@ public class Main extends Application {
                     startDateInput = null;
                     endDateInput = null;
                 } else {
-                    requiredDisplay(yearInField, requiredYear, year);
+                    if(yearInput == null)  requiredDisplay(yearInField, requiredYear, year);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
@@ -912,8 +909,8 @@ public class Main extends Application {
         monthReport.setMaxWidth(Double.MAX_VALUE);
         monthReport.setOnAction(event -> {
             try {
-                if (monthInput != null) {
-                    if (yearInput != null) {
+                if (monthInput != null && yearInput != null) {
+
                         requiredHider(farmIdInField, requiredFarmID, farmId);
                         requiredHider(monthInField, requiredMonth, month);
                         requiredHider(yearInField, requiredYear, year);
@@ -927,7 +924,6 @@ public class Main extends Application {
                         farmIdInput = null;
                         startDateInput = null;
                         endDateInput = null;
-                    }
                 } else {
                     requiredDisplay(monthInField, requiredMonth, month);
                     requiredDisplay(yearInField, requiredYear, year);
