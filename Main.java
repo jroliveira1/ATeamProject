@@ -50,7 +50,9 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.*;
 import java.math.RoundingMode;
@@ -217,7 +219,7 @@ public class Main extends Application {
      *
      * @return
      */
-    private Label makeDragLabel() {
+    private Label makeDragLabel() {   
         Label dragFile = new Label("Drag and Drop File Here");
         dragFile.setId("drop");
         dragFile.setPadding(new Insets(10, 10, 0, 10));
@@ -235,8 +237,10 @@ public class Main extends Application {
                 filePath = files.get(i).getAbsolutePath();
 
                 if (validFile)
+                {    
+                    popupHandler();
                     data.addAll(loadFile(filePath));
-
+                }
             }
             validFile = true;
 
@@ -259,6 +263,7 @@ public class Main extends Application {
      * @return
      */
     private List<FarmData> loadFile(String inputFilePath) {
+        
         List<FarmData> inputList = new ArrayList<>();
         try {
             File inputF = new File(inputFilePath);
@@ -277,7 +282,8 @@ public class Main extends Application {
             invalidFile.showAndWait().filter(alert -> alert == ButtonType.OK);
             validFile = false;
         }
-
+        
+        
         return inputList;
     }
 
@@ -1130,7 +1136,36 @@ public class Main extends Application {
         t.setStyle("-fx-focus-color: black ;");
         l2.setTextFill(Color.web("#000000")); // make boarder black
     }
-
+    
+    private void popupHandler()
+    {
+        // create a label 
+        Stage stage = new Stage();
+        TilePane popup = new TilePane();
+        
+        Label label = new Label("File succesfully added to current data");
+        
+        Button close = new Button("Close");
+        
+        close.setOnAction(event -> {
+            stage.hide();
+        });
+        
+        // set background 
+        label.setStyle(" -fx-background-color: white;"); 
+        // set size of label 
+        label.setMinWidth(80); 
+        label.setMinHeight(50); 
+        
+        popup.getChildren().addAll(label,close);
+        
+        Scene s = new Scene(popup, 200,100);
+        stage.setScene(s);
+        stage.setAlwaysOnTop(true);
+        stage.show();
+    }
+    
+    
     /**
      * @param args
      */
