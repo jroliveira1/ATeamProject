@@ -104,7 +104,7 @@ public class Main extends Application {
         minMaxOrAve.setId("minMaxOrAve");
         minMaxOrAve.setPadding(new Insets(5, 0, 0, 30));
         loadContaner.getChildren().addAll(dragFile, minMaxOrAve, separator1);
-
+        
         // make button for printing
         printButton = new Button("Download all Data");
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -152,7 +152,7 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
 
         // add top, left, center, right, and bottom components
-        root.setTop(loadContaner);
+        root.setTop(makeTopComponents(loadContaner));
 
         root.setLeft(leftComponent);
         makeTable();
@@ -176,6 +176,26 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    private HBox makeTopComponents(VBox loadContainer)
+    {
+        HBox top = new HBox();
+        Button originalData = new Button ("Display Original Data");
+        
+        Region spacer = new Region();
+        spacer.setPrefWidth(370); 
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        
+        originalData.setStyle("-fx-focus-color: lightblue;");
+        
+        originalData.setMaxWidth(Double.MAX_VALUE);
+        originalData.setOnAction(event -> {
+            table.setItems(FXCollections.observableArrayList(data));
+        });
+        top.getChildren().addAll(loadContainer, spacer, originalData);
+        
+        return top;
+        
+    }
 
     /**
      * method used to create the label that is used to drag and drop a file
@@ -858,12 +878,13 @@ public class Main extends Application {
                             endDateInput = null;
                         }
                 } else {
-                 if(farmIdInput == null)   requiredDisplay(farmIdInField, requiredFarmID, farmId);
+                    requiredDisplay(farmIdInField, requiredFarmID, farmId);
                     if(yearInput == null) requiredDisplay(yearInField, requiredYear, year);
 
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
+                    if(farmIdInput != null) requiredHider(farmIdInField, requiredFarmID, farmId);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -892,7 +913,7 @@ public class Main extends Application {
                     startDateInput = null;
                     endDateInput = null;
                 } else {
-                    requiredDisplay(yearInField, requiredYear, year);
+                    if(yearInput == null)  requiredDisplay(yearInField, requiredYear, year);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
                     requiredHider(monthInField, requiredMonth, month);
@@ -925,19 +946,26 @@ public class Main extends Application {
                         startDateInput = null;
                         endDateInput = null;
                 } else {
-                    if(monthInput == null) requiredDisplay(monthInField, requiredMonth, month);
-                    if(yearInput == null)   requiredDisplay(yearInField, requiredYear, year);
+                    requiredDisplay(monthInField, requiredMonth, month);
+                    requiredDisplay(yearInField, requiredYear, year); 
                     requiredHider(farmIdInField, requiredFarmID, farmId);
                     requiredHider(startDateInField, requiredDate1, start);
                     requiredHider(endDateInField, requiredDate1, end);
+                    if(monthInput != null) requiredHider(monthInField, requiredMonth, month);
                 }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }
         });
+        
+        Button clearReport = new Button ("Clear current report");
+        clearReport.setMaxWidth(Double.MAX_VALUE);
+        clearReport.setOnAction(event -> {
+            table.setItems(FXCollections.observableArrayList(new FarmData()));
+        });
 
-        reportHolder.getChildren().addAll(farmReport, annualReport, monthReport);
+        reportHolder.getChildren().addAll(farmReport, annualReport, monthReport, clearReport);
         // HBox.setHgrow(farmReport, Priority.ALWAYS);
 
 
