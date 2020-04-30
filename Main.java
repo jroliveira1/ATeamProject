@@ -358,6 +358,7 @@ public class Main extends Application {
     table.getColumns().get(0).setVisible(false); // make date not visible
     table.getColumns().get(1).setVisible(true); // make month visible
     table.getColumns().get(2).setVisible(false); // make farmID not visible
+    table.getColumns().get(3).setVisible(true); //make weight Visible
 
     formatedData = data.stream()
         .filter(farmData -> farmData.getDate().substring(0, 4).equalsIgnoreCase(yearInput)
@@ -439,9 +440,10 @@ public class Main extends Application {
 
   private void annualReport() throws IOException {
 
-    table.setVisible(true);
-    table.getColumns().get(0).setVisible(false);
-    table.getColumns().get(1).setVisible(false);
+     table.getColumns().get(0).setVisible(false); // make date not visible
+     table.getColumns().get(1).setVisible(false); // make month visible
+     table.getColumns().get(2).setVisible(true); // make farmID not visible
+     table.getColumns().get(3).setVisible(true); //make weight Visible
     // data.add(new FarmData("Sion's farm", 4558858));
 
     List<FarmData> annualFarmWeight = new ArrayList<>();
@@ -515,9 +517,10 @@ public class Main extends Application {
     //
     // }
 
-    table.setVisible(true);
-    table.getColumns().get(0).setVisible(false);
-    table.getColumns().get(1).setVisible(false);
+    table.getColumns().get(0).setVisible(false); // make date 
+    table.getColumns().get(1).setVisible(false); // make month 
+    table.getColumns().get(2).setVisible(true); // make farmID 
+    table.getColumns().get(3).setVisible(true); //make weight
     // data.add(new FarmData("Sion's farm", 4558858));
 
     List<FarmData> annualFarmWeight = new ArrayList<>();
@@ -597,9 +600,10 @@ public class Main extends Application {
 
     ///////////////////////////////
 
-    table.setVisible(true);
-    table.getColumns().get(0).setVisible(false);
-    table.getColumns().get(1).setVisible(false);
+    table.getColumns().get(0).setVisible(false); // make date not visible
+    table.getColumns().get(1).setVisible(false); // make month visible
+    table.getColumns().get(2).setVisible(true); // make farmID not visible
+    table.getColumns().get(3).setVisible(true); //make weight Visible
     // data.add(new FarmData("Sion's farm", 4558858));
 
     List<FarmData> annualFarmWeight = new ArrayList<>();
@@ -877,6 +881,9 @@ public class Main extends Application {
                   requiredHider(yearIn, requiredYear, year);
                   requiredHider(startDate, requiredDate1, start);
                   requiredHider(endDate, requiredDate1, end);
+                  monthIn.clear();
+                  startDate.clear();
+                  endDate.clear();
               }
           }
           else
@@ -904,6 +911,10 @@ public class Main extends Application {
             requiredHider(yearIn, requiredYear, year);
             requiredHider(startDate, requiredDate1, start);
             requiredHider(endDate, requiredDate1, end);
+            farmIdIn.clear();
+            startDate.clear();
+            endDate.clear();
+            monthIn.clear();
         }
         else
         {
@@ -933,6 +944,9 @@ public class Main extends Application {
                   requiredHider(yearIn, requiredYear, year);
                   requiredHider(startDate, requiredDate1, start);
                   requiredHider(endDate, requiredDate1, end);
+                  farmIdIn.clear();
+                  startDate.clear();
+                  endDate.clear();
                   monthlyReport();
               }
           } 
@@ -1012,6 +1026,9 @@ public class Main extends Application {
               requiredHider(yearIn, requiredYear, year);
               requiredHider(startDate, requiredDate1, start);
               requiredHider(endDate, requiredDate1, end);
+              farmIdIn.clear();
+              monthIn.clear();
+              yearIn.clear();
               dateRangeReport();
           }
           else
