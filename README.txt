@@ -14,7 +14,7 @@ Which team members were on same xteam together?
 Sreenivas and Jason
 
 Future work: 
-* add option for user to view different reports as a bar graph or a pie chart
+add option for user to view different reports as a bar graph or a pie chart
 
 Other notes or comments to the grader: We were unable to get the css style sheet to work with the jar
 
