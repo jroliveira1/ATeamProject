@@ -36,7 +36,6 @@ public class Main extends Application {
     private int leftCompWidth = 275;
     private int prefButtonWidth = 200;
     private static final String APP_TITLE = "Milk Weight Analyzer";
-
     private VBox reportHolder;
     
     @Override

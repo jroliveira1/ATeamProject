@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.io.FileDescriptor;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -191,7 +192,7 @@ public class GUI {
 		VBox searchDataHolder = new VBox();
 		searchDataHolder.getChildren().addAll(farmId, farmIdIn, year, yearIn, month, monthIn);
 		searchDataHolder.setAlignment(Pos.CENTER_LEFT);
-		searchDataHolder.setPadding(new Insets(0, 60, 0, 20));
+		searchDataHolder.setPadding(new Insets(10, 60, 0, 20));
 
 		// make radio buttons for diff views
 		VBox hboxHolder = new VBox();
@@ -260,7 +261,7 @@ public class GUI {
 		averageHolder.setPadding(new Insets(0, 10, 0, 10));
 
 		hboxHolder.getChildren().addAll(percentHolder, minHolder, maxHolder, averageHolder);
-		hboxHolder.setPadding(new Insets(20));
+		hboxHolder.setPadding(new Insets(10));
 		hboxHolder.setSpacing(5);
 
 		// add min max and average to group
@@ -272,7 +273,7 @@ public class GUI {
 
 		// report type buttons
 		reportHolder = new VBox(5);
-		reportHolder.setPadding(new Insets(50, 0, 10, 0));
+		reportHolder.setPadding(new Insets(30, 0, 10, 0));
 
 		Button farmReport = new Button("Farm Report");
 		// farmReport.setPrefWidth(prefButtonWidth);
@@ -308,6 +309,11 @@ public class GUI {
 			}
 		});
 		
+		Button clearReport = new Button ("Clear current report");
+		clearReport.setMaxWidth(Double.MAX_VALUE);
+		clearReport.setOnAction(event -> {
+			table.setItems(FXCollections.observableArrayList(new FarmData()));
+		});
 		
 		Button saveOutput = new Button("Save current report to file");
 		saveOutput.setMaxWidth(Double.MAX_VALUE);
@@ -316,7 +322,7 @@ public class GUI {
 		});
 		
 		
-		reportHolder.getChildren().addAll(farmReport, annualReport, monthReport, saveOutput);
+		reportHolder.getChildren().addAll(farmReport, annualReport, monthReport, saveOutput, clearReport);
 		// HBox.setHgrow(farmReport, Priority.ALWAYS);
 		
 

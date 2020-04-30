@@ -56,10 +56,6 @@ public class FileManager {
 		return inputList;
 	}
 
-	boolean checkValidity() {
-		return this.validFile;
-	}
-
 	private Function<String, FarmData> mapToItem = (line) -> {
 
 		String[] curFarm = line.split(COMMA);// a CSV has comma separated lines
@@ -90,10 +86,6 @@ public class FileManager {
 			ObservableList<FarmData> data = table.getItems();
 //			outputFile.write("Farm_id: " + data.get(1).getFarmID() + "\n");
 			outputFile.write("Month, Weight\n");
-
-//			table.getColumns().setAll(dateCol, monthCol, farmIDCol, weightCol, percentCol);
-//			table.getColumns().get(1).setVisible(false);
-//			table.getColumns().get(4).setVisible(false);
 
 			for (FarmData farm : data) {
 				outputFile.write(farm.getMonth() + ", " + farm.getWeight() + "\n");
@@ -138,7 +130,6 @@ public class FileManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 }
