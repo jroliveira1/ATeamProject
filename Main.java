@@ -729,7 +729,13 @@ public class Main extends Application {
     });
 
     
-
+    Label start = new Label("Start Date");
+    TextField endDate = new TextField();
+    Label end = new Label("End Date");
+    TextField startDate = new TextField();
+    Label requiredDate1 = new Label ("*Required");
+    Label requiredDate2 = new Label ("*Required");
+    
     Label year = new Label("Year");
     year.setPadding(inputPadd);
     Label requiredYear = new Label("*Required");
@@ -869,12 +875,17 @@ public class Main extends Application {
                   requiredHider(farmIdIn, requiredFarmID, farmId);
                   requiredHider(monthIn, requiredMonth, month);
                   requiredHider(yearIn, requiredYear, year);
+                  requiredHider(startDate, requiredDate1, start);
+                  requiredHider(endDate, requiredDate1, end);
               }
           }
           else
           {
               requiredDisplay(farmIdIn, requiredFarmID, farmId);
               requiredDisplay(yearIn, requiredYear, year);
+              requiredHider(startDate, requiredDate1, start);
+              requiredHider(endDate, requiredDate1, end);
+              requiredHider(monthIn, requiredMonth, month);
           }
       } catch (IOException e) {
         e.printStackTrace();
@@ -891,10 +902,16 @@ public class Main extends Application {
             requiredHider(farmIdIn, requiredFarmID, farmId);
             requiredHider(monthIn, requiredMonth, month);
             requiredHider(yearIn, requiredYear, year);
+            requiredHider(startDate, requiredDate1, start);
+            requiredHider(endDate, requiredDate1, end);
         }
         else
         {
             requiredDisplay(yearIn, requiredYear, year);
+            requiredHider(startDate, requiredDate1, start);
+            requiredHider(endDate, requiredDate1, end);
+            requiredHider(monthIn, requiredMonth, month);
+            requiredHider(farmIdIn, requiredFarmID, farmId);
         }
 
       } catch (IOException e) {
@@ -902,7 +919,7 @@ public class Main extends Application {
         e.printStackTrace();
       }
     });
-
+    
     Button monthReport = new Button("Monthly Report");
     monthReport.setMaxWidth(Double.MAX_VALUE);
     monthReport.setOnAction(event -> {
@@ -911,16 +928,21 @@ public class Main extends Application {
           {
               if(yearInput!=null)
               {
-                  monthlyReport();
                   requiredHider(farmIdIn, requiredFarmID, farmId);
                   requiredHider(monthIn, requiredMonth, month);
                   requiredHider(yearIn, requiredYear, year);
+                  requiredHider(startDate, requiredDate1, start);
+                  requiredHider(endDate, requiredDate1, end);
+                  monthlyReport();
               }
           } 
           else
           {
               requiredDisplay(monthIn, requiredMonth, month);
               requiredDisplay(yearIn, requiredYear, year);
+              requiredHider(farmIdIn, requiredFarmID, farmId);
+              requiredHider(startDate, requiredDate1, start);
+              requiredHider(endDate, requiredDate1, end);
           }
       }
       catch (IOException e) {
@@ -938,10 +960,6 @@ public class Main extends Application {
     VBox endHolder = new VBox(5);
     HBox datesHold = new HBox(5);
     VBox d = new VBox(5);
-    Label start = new Label("Start Date");
-    TextField startDate = new TextField();
-    Label requiredDate1 = new Label ("*Required");
-    Label requiredDate2 = new Label ("*Required");
     requiredDate1.setTextFill(Color.web("#FF0000"));
     requiredDate1.setVisible(false);
     requiredDate2.setVisible(false);
@@ -954,8 +972,7 @@ public class Main extends Application {
     
     
 
-    TextField endDate = new TextField();
-    Label end = new Label("End Date");
+
     endDate.setMaxWidth(Double.MAX_VALUE);
     // set listener for reading
     yearIn.textProperty().addListener((obs, oldText, newText) -> {
@@ -1001,6 +1018,9 @@ public class Main extends Application {
           {
               requiredDisplay(startDate, requiredDate1, start);
               requiredDisplay(endDate, requiredDate1, end);
+              requiredHider(farmIdIn, requiredFarmID, farmId);
+              requiredHider(monthIn, requiredMonth, month);
+              requiredHider(yearIn, requiredYear, year);
           }
       } catch (IOException e) {
         System.out.println(e.getMessage());
