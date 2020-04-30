@@ -737,8 +737,10 @@ public class Main extends Application {
     TextField endDate = new TextField();
     Label end = new Label("End Date");
     TextField startDate = new TextField();
+    
     Label requiredDate1 = new Label ("*Required");
     Label requiredDate2 = new Label ("*Required");
+    
     
     Label year = new Label("Year");
     year.setPadding(inputPadd);
@@ -974,10 +976,13 @@ public class Main extends Application {
     VBox endHolder = new VBox(5);
     HBox datesHold = new HBox(5);
     VBox d = new VBox(5);
+    
+    Label exampleDate = new Label("yyyy-mm-dd");
     requiredDate1.setTextFill(Color.web("#FF0000"));
     requiredDate1.setVisible(false);
     requiredDate2.setVisible(false);
     startDate.setMaxWidth(Double.MAX_VALUE);
+
     // set listener for reading
     startDate.textProperty().addListener((obs, oldText, newText) -> {
         System.out.println("Text changed from "+oldText+" to "+newText);
@@ -998,13 +1003,15 @@ public class Main extends Application {
     Label dash = new Label("-");
     Label filler = new Label("-");
     
+    Label exampleDate2 = new Label("yyyy-mm-dd");
+    
     filler.setVisible(false);
-    dash.setPadding(new Insets(25, 5, 0, 5));
+    dash.setPadding(new Insets(0, 5, 0, 5));
     d.getChildren().addAll(filler, dash);
     endDate.setMaxWidth(Double.MAX_VALUE);
-    startHolder.getChildren().addAll(requiredDate1, start, startDate);
+    startHolder.getChildren().addAll(requiredDate1, start, exampleDate, startDate);
     startHolder.setPadding(new Insets(0, 0, 0, 10));
-    endHolder.getChildren().addAll(requiredDate2, end, endDate);
+    endHolder.getChildren().addAll(requiredDate2, end, exampleDate2, endDate);
     endHolder.setPadding(new Insets(0, 10, 0, 0));
     datesHold.getChildren().addAll(startHolder, d, endHolder);
     datesHold.setAlignment(Pos.BASELINE_CENTER);
@@ -1072,6 +1079,8 @@ public class Main extends Application {
     date.setPadding(inputPadd);
     TextField dateIn = new TextField();
     dateIn.setMaxWidth(Double.MAX_VALUE);;
+    
+    
 
     Label weight = new Label("Weight");
     weight.setPadding(inputPadd);
