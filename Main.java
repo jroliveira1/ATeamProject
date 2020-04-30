@@ -48,6 +48,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -486,7 +487,7 @@ public class Main extends Application {
     setPercent(annualFarmWeight);
 
     table.setItems(FXCollections.observableArrayList(annualFarmWeight));
-    printReport();
+    printReport();        
   }
 
 
@@ -672,7 +673,7 @@ public class Main extends Application {
 
   private void printReport() throws IOException {
     File newFile = new File(System.getProperty("user.dir"));
-    File newFile2 = new File("C:\\Users\\sionc\\Downloads\\Temp\\testing.csv");
+    File newFile2 = new File("E:\2019.csv");
     FileWriter writer = new FileWriter(newFile2);
     writer.write("date,farm_id,weight\n");
 
@@ -711,9 +712,15 @@ public class Main extends Application {
 
     // farm year and month input
     Insets inputPadd = new Insets(10, 0, 0, 0);
+    Insets requiredPadd = new Insets(10,0,0,5);
     Label farmId = new Label("Farm ID");
     TextField farmIdIn = new TextField();
     farmIdIn.setMaxWidth(Double.MAX_VALUE);
+    
+    Label requiredFarmID = new Label("*Required");
+    requiredFarmID.setTextFill(Color.web("#FF0000"));
+    requiredFarmID.setVisible(false);
+    requiredFarmID.setPadding(new Insets(0,0,0,5));
 
     // set listener for reading
     farmIdIn.setOnAction(event -> {
@@ -721,10 +728,14 @@ public class Main extends Application {
       farmIdIn.clear();
     });
 
-
+    
 
     Label year = new Label("Year");
     year.setPadding(inputPadd);
+    Label requiredYear = new Label("*Required");
+    requiredYear.setTextFill(Color.web("#FF0000"));
+    requiredYear.setVisible(false);
+    requiredYear.setPadding(requiredPadd);
     TextField yearIn = new TextField();
     yearIn.setMaxWidth(Double.MAX_VALUE);
 
@@ -738,6 +749,10 @@ public class Main extends Application {
     Label month = new Label("Month");
     month.setPadding(inputPadd);
     TextField monthIn = new TextField();
+    Label requiredMonth = new Label("*Required");
+    requiredMonth.setTextFill(Color.web("#FF0000"));
+    requiredMonth.setVisible(false);
+    requiredMonth.setPadding(requiredPadd);
     monthIn.setMaxWidth(Double.MAX_VALUE);
 
     // set listener for reading
@@ -746,8 +761,14 @@ public class Main extends Application {
       monthIn.clear();
     });
 
+    HBox yearRequiredHolder = new HBox();
+    HBox monthRequiredHolder = new HBox();
+    HBox FarmIDRequiredHolder = new HBox();
+    yearRequiredHolder.getChildren().addAll(year, requiredYear);
+    FarmIDRequiredHolder.getChildren().addAll(farmId, requiredFarmID);
+    monthRequiredHolder.getChildren().addAll(month,requiredMonth);
     VBox searchDataHolder = new VBox();
-    searchDataHolder.getChildren().addAll(farmId, farmIdIn, year, yearIn, month, monthIn);
+    searchDataHolder.getChildren().addAll(FarmIDRequiredHolder, farmIdIn, yearRequiredHolder, yearIn, monthRequiredHolder, monthIn);
     searchDataHolder.setAlignment(Pos.CENTER_LEFT);
     searchDataHolder.setPadding(new Insets(0, 60, 0, 20));
 
@@ -839,7 +860,17 @@ public class Main extends Application {
     farmReport.setMaxWidth(Double.MAX_VALUE);
     farmReport.setOnAction(event -> {
       try {
-        farmReport();
+          if(farmIdInput!=null)
+          {
+              farmReport();
+              requiredHider(farmIdIn, requiredFarmID, farmId);
+              requiredHider(monthIn, requiredMonth, month);
+              requiredHider(yearIn, requiredYear, year);
+          }
+          else
+          {
+              requiredDisplay(farmIdIn, requiredFarmID, farmId);
+          }
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -849,7 +880,22 @@ public class Main extends Application {
     annualReport.setMaxWidth(Double.MAX_VALUE);
     annualReport.setOnAction(event -> {
       try {
-        annualReport();
+        if(yearInput!=null)
+        {
+            annualReport();
+            requiredHider(farmIdIn, requiredFarmID, farmId);
+            requiredHider(monthIn, requiredMonth, month);
+            requiredHider(yearIn, requiredYear, year);
+        }
+        else
+        {
+            requiredYear.setVisible(true);
+            yearIn.setStyle("-fx-text-inner-color: red");
+            yearIn.setStyle("-fx-text-box-border: red ;");
+            yearIn.setStyle("-fx-focus-color: red ;");
+            year.setTextFill(Color.web("#FF0000"));
+        }
+
       } catch (IOException e) {
         System.out.println(e.getMessage());
         e.printStackTrace();
@@ -860,8 +906,24 @@ public class Main extends Application {
     monthReport.setMaxWidth(Double.MAX_VALUE);
     monthReport.setOnAction(event -> {
       try {
-        monthlyReport();
-      } catch (IOException e) {
+          if(monthInput!=null)
+          {
+              monthlyReport();
+              requiredMonth.setVisible(true);
+              requiredHider(farmIdIn, requiredFarmID, farmId);
+              requiredHider(monthIn, requiredMonth, month);
+              requiredHider(yearIn, requiredYear, year);
+          }
+          else
+          {
+              requiredMonth.setVisible(true);
+              monthIn.setStyle("-fx-text-inner-color: red");
+              monthIn.setStyle("-fx-text-box-border: red ;");
+              monthIn.setStyle("-fx-focus-color: red ;");
+              month.setTextFill(Color.web("#FF0000"));
+          }
+      }
+      catch (IOException e) {
         System.out.println(e.getMessage());
         e.printStackTrace();
       }
@@ -968,7 +1030,23 @@ public class Main extends Application {
     return editComponent;
   }
 
-
+  private void requiredDisplay(TextField t, Label l1, Label l2)
+  {
+      l1.setVisible(true);
+      t.setStyle("-fx-text-inner-color: red");
+      t.setStyle("-fx-text-box-border: red ;");
+      t.setStyle("-fx-focus-color: red ;");
+      l2.setTextFill(Color.web("#FF0000")); 
+  }
+  
+  private void requiredHider(TextField t, Label l1, Label l2)
+  {
+      l1.setVisible(false);
+      t.setStyle("-fx-text-inner-color: black ;");
+      t.setStyle("-fx-text-box-border: black ;");
+      t.setStyle("-fx-focus-color: black ;");
+      l2.setTextFill(Color.web("#000000")); 
+  }
   /**
    * @param args
    */
