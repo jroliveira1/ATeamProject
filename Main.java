@@ -87,7 +87,7 @@ public class Main extends Application {
     private boolean validFile = true;
 
 
-    private static final int WINDOW_WIDTH = 900;
+    private static final int WINDOW_WIDTH = 1000;
     private static final int WINDOW_HEIGHT = 700;
     private int leftCompWidth = 222;
     private int prefButtonWidth = 200;
@@ -1108,48 +1108,14 @@ public class Main extends Application {
         // report data range button
         VBox addHolder = new VBox();
         Button addData = new Button("Add Data");
+        Button removeData = new Button("Remove Data");
 
         // set action for adding data including required labels
-        Alert badData = new Alert(Alert.AlertType.WARNING,
-                "There entered date was not in the correct format");
+        Alert badData = new Alert(Alert.AlertType.WARNING, "There entered date was not in the correct format");
 
         addData.setOnAction(event -> {
             if (newFarmID != null && newDate != null && newWeight != null) {
-                hideRequired(farmIdIn, farmId, "FarmID");
-                hideRequired(dateIn, date, "Date");
-                hideRequired(weightIn, weight, "Weight");
-
-                // check that data entered is parable
-                String[] dateParts = newDate.split("-");
-
-
-
-                // three distinct numbers were not entered
-                if(dateParts.length != 3 ){
-                    badData.showAndWait();
-                    return;
-                }
-
-                // check that a zero was not entered before the day of the month
-                if(dateParts[1].charAt(0) == '0' || dateParts[2].charAt(0) == '0' ){
-                    badData.setContentText("Please do not enter a 0 in front of the day or the month");
-                    badData.showAndWait();
-                    return;
-                }
-
-                for(int i = 0; i < 3; i++) {
-                    if (!isNumeric(dateParts[i])) {
-                           badData.setContentText("part of your date was not a number");
-                          badData.showAndWait();
-                           return;
-                    }
-                }
-
-                    if(!isNumeric(newWeight)){
-                        badData.setContentText("please enter a number");
-                        badData.showAndWait();
-                        return;
-                    }
+              if(!processNewData(farmIdIn,farmId,dateIn,date,weightIn,weight,badData)) return; // return if data was not processed correctly
 
                 data.add(new FarmData(newDate, newFarmID, Integer.parseInt(newWeight)));
                     table.setItems(FXCollections.observableArrayList(data));
@@ -1174,7 +1140,35 @@ public class Main extends Application {
             }
         });
 
-        addHolder.getChildren().addAll(addData, printButton);
+        removeData.setOnAction(event -> {
+            if (newFarmID != null && newDate != null && newWeight != null) {
+                if(!processNewData(farmIdIn,farmId,dateIn,date,weightIn,weight,badData)) return; // return if data was not processed correctly
+
+                FarmData farmToRemove = new FarmData(newDate, newFarmID, Integer.parseInt(newWeight));
+                data.removeIf(farmData -> farmData.equals(farmToRemove));
+                table.setItems(FXCollections.observableArrayList(data));
+
+                // set up for another entry
+                farmIdIn.clear();
+                dateIn.clear();
+                weightIn.clear();
+                newFarmID = null;
+                newDate = null;
+                newWeight = null;
+            } else {
+                showRequired(farmIdIn, farmId, "FarmID *Required");
+                showRequired(dateIn, date, "Date *Required");
+                showRequired(weightIn, weight, "Weight *Required");
+
+                // some values may have already been entered
+                if (newFarmID != null) hideRequired(farmIdIn, farmId, "FarmID");
+                if (newDate != null) hideRequired(dateIn, date, "Date");
+                if (newWeight != null) hideRequired(weightIn, weight, "Weight");
+
+            }
+        });
+
+        addHolder.getChildren().addAll(addData, removeData, printButton);
         addHolder.setSpacing(10);
         addHolder.setPadding(new Insets(30, 0, 0, 0));
 
@@ -1183,6 +1177,57 @@ public class Main extends Application {
         editComponent.setPadding(new Insets(0, 60, 0, 30));
 
         return editComponent;
+    }
+
+    /**
+     * return true if the new data entered was in the expected format
+     * @param farmIdIn
+     * @param farmId
+     * @param dateIn
+     * @param date
+     * @param weightIn
+     * @param weight
+     * @param badData
+     * @return
+     */
+    private boolean processNewData(TextField farmIdIn, Label farmId, TextField dateIn, Label date, TextField weightIn, Label weight, Alert badData) {
+        if (newFarmID != null && newDate != null && newWeight != null) {
+            hideRequired(farmIdIn, farmId, "FarmID");
+            hideRequired(dateIn, date, "Date");
+            hideRequired(weightIn, weight, "Weight");
+
+            // check that data entered is parable
+            String[] dateParts = newDate.split("-");
+
+
+            // three distinct numbers were not entered
+            if (dateParts.length != 3) {
+                badData.showAndWait();
+                return false;
+            }
+
+            // check that a zero was not entered before the day of the month
+            if (dateParts[1].charAt(0) == '0' || dateParts[2].charAt(0) == '0') {
+                badData.setContentText("Please do not enter a 0 in front of the day or the month");
+                badData.showAndWait();
+                return false;
+            }
+
+            for (int i = 0; i < 3; i++) {
+                if (!isNumeric(dateParts[i])) {
+                    badData.setContentText("part of your date was not a number");
+                    badData.showAndWait();
+                    return false;
+                }
+            }
+
+            if (!isNumeric(newWeight)) {
+                badData.setContentText("please enter a number");
+                badData.showAndWait();
+                return false;
+            }
+        }
+        return true;
     }
 
     private void showRequired(TextField t, Label l1, String label) {
