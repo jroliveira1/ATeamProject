@@ -65,50 +65,66 @@ import java.text.SimpleDateFormat;
 
 import static javafx.scene.control.cell.ChoiceBoxTableCell.forTableColumn;
 
+
+/**
+ * Creates a program enviroment for the analysis of csv entered data for analysis of 
+ * milk production
+ * 
+ *
+ */
 public class Main extends Application {
     private static final String COMMA = "\\s*,\\s*";
     private String farmIdInput; // used to store farmId user entered
     private String yearInput; // used to store year user entered
     private String monthInput; // used to store month user entered
-    private String startDateInput;
-    private String endDateInput;
+    private String startDateInput;//used to store the user input of start date range
+    private String endDateInput;//used to store the user input of end date range
 
     // field variables used to store info for new data entry
     private String newFarmID;
     private String newDate;
     private String newWeight;
 
-    Scene scene;
+    Scene scene;//stores the primary active scene of the gui
 
-    private TableView<FarmData> table;
-    private Set<FarmData> data = new HashSet<FarmData>();
-    private List<FarmData> formatedData = new ArrayList<>();
-    private Label minMaxOrAve = new Label();
-    private boolean validFile = true;
+    private TableView<FarmData> table;//used to store data in an organized fashion for display
+    private Set<FarmData> data = new HashSet<FarmData>();//hashset for storing our data on backend
+    private List<FarmData> formatedData = new ArrayList<>();//stores list of dates in formatted function
+    private Label minMaxOrAve = new Label();//label for determing min max avg
+    private boolean validFile = true;//true if inputted file is valid format false if not
 
 
-    private static final int WINDOW_WIDTH = 1000;
-    private static final int WINDOW_HEIGHT = 700;
-    private int leftCompWidth = 222;
-    private int prefButtonWidth = 200;
-    private static final String APP_TITLE = "Milk Weight Analyzer";
-    Button printButton = new Button();
+    private static final int WINDOW_WIDTH = 1000;//Width of stage
+    private static final int WINDOW_HEIGHT = 700;//height of stage
+    private int leftCompWidth = 222;//stores values for use in gui spacing
+    private int prefButtonWidth = 200;//stores values for use in gui spacing
+    private static final String APP_TITLE = "Milk Weight Analyzer";//name of program
+    Button printButton = new Button();//print button for printing out to file
 
-    private VBox reportHolder;
+    private VBox reportHolder;//stores vertical box containing the reports which are generated
 
+    /**
+     * Launch method to generate the base state of the program
+     * 
+     * 
+     * 
+     * @param primaryStage - primary stage which gui draws on
+     *
+     * @throws Exception - on bad file input
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-
         // load button for top component
         VBox loadContaner = new VBox();
         Label dragFile = makeDragLabel();
 
-
+        //defines and formats top components of gui
         Separator separator1 = new Separator();
         separator1.setMaxWidth(400);
         minMaxOrAve.setId("minMaxOrAve");
         minMaxOrAve.setPadding(new Insets(5, 0, 0, 30));
+
+        //adds components to load container for displaying
         loadContaner.getChildren().addAll(dragFile, minMaxOrAve, separator1);
 
         // make button for printing
@@ -119,7 +135,7 @@ public class Main extends Application {
             if (selectedDirectory == null) {
                 //No Directory selected
             } else {
-                try {
+                try { //handles potential IOException on bad file input
                     printAllData(new File(selectedDirectory.getAbsolutePath() + "\\MilkData.csv"));
                     Alert invalidFile = new Alert(Alert.AlertType.CONFIRMATION,
                             "Your data was successfully downloaded in the selected folder");
@@ -169,33 +185,43 @@ public class Main extends Application {
         root.setCenter(table);
 
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());//sets fx styling based off css file inputs
 
 
-        // Add the stuff and set the primary stage
+        // Add the nodes and set the primary stage to show
         primaryStage.setTitle(APP_TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    /*
+     * private helper for creating top components of gui
+     * 
+     * @Params loadContainer - vbox for storing top nodes 
+     * @return HBox returns hbox of correctly formatted nodes
+     * 
+     */
     private HBox makeTopComponents(VBox loadContainer) {
+    	//stores and organizes nodes
         HBox top = new HBox();
         VBox clearStack = new VBox();
-
+        
         Button originalData = new Button("Display Original Data");
 
         Button clearData = new Button("Clear Loaded Data");
 
         Region spacer = new Region();
         spacer.setPrefWidth(370);
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox.setHgrow(spacer, Priority.ALWAYS);//dynamically updates spacer size to match expanded window
 
+        //css controlling for quick updates
         originalData.setStyle("-fx-focus-color: lightblue;");
         clearData.setStyle("-fx-focus-color: lightblue;");
 
         clearData.setMaxWidth(Double.MAX_VALUE);
         originalData.setMaxWidth(Double.MAX_VALUE);
 
+        //creates alert to warm of large file deletion, and handles if it occurs
         Alert clearAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete all data that you have loaded?");
 
         clearData.setOnAction(event -> {
@@ -206,7 +232,8 @@ public class Main extends Application {
                 table.setItems(FXCollections.observableArrayList(data));
             }
         });
-
+        
+        //handler for original data button even, hides and shows specefic columns of our table 
         originalData.setOnAction(event -> {
             table.getColumns().get(0).setVisible(true);
             table.getColumns().get(1).setVisible(false);
@@ -228,19 +255,21 @@ public class Main extends Application {
     /**
      * method used to create the label that is used to drag and drop a file
      *
-     * @return
+     * @return Label
      */
     private Label makeDragLabel() {
+    	//defines drag box for file loading
         Label dragFile = new Label("Drag and Drop File(s) Here");
         Tooltip dragTip = new Tooltip("addition files will add to the data set");
         Tooltip.install(dragFile, dragTip);
         dragFile.setId("drop");
         dragFile.setPadding(new Insets(10, 10, 0, 10));
+        
+        //handlers for events involving drag file both when it is over the load box and when it is loaded
         dragFile.setOnDragOver(event -> {
             if (event.getDragboard().hasFiles())
                 event.acceptTransferModes(TransferMode.COPY);
         });
-
         dragFile.setOnDragDropped(event -> {
             List<File> files = event.getDragboard().getFiles();
             String filePath;
@@ -269,8 +298,8 @@ public class Main extends Application {
     /**
      * used to load a file dragged and dropped the the appropriate location
      *
-     * @param inputFilePath
-     * @return
+     * @param inputFilePath defines file path to desired file
+     * @return List<FarmData> loaded from file stores value
      */
     private List<FarmData> loadFile(String inputFilePath) {
 
@@ -297,6 +326,10 @@ public class Main extends Application {
         return inputList;
     }
 
+    /**
+     * defines function for mapping and decomposing csv
+     * 
+     */
     private Function<String, FarmData> mapToItem = (line) -> {
 
         String[] curFarm = line.split(COMMA);// a CSV has comma separated lines
@@ -313,12 +346,16 @@ public class Main extends Application {
     /**
      * private method used to return month given an int
      *
-     * @param month
+     * @param month represented as numerical int value 1-12
+     * @return string representation of month number input
      */
     private String getMonth(int month) {
         return new DateFormatSymbols().getMonths()[month - 1];
     }
 
+    /**
+     * helper method to generate table from our data set
+     */
     private void makeTable() {
         table = new TableView<FarmData>();
 
@@ -357,7 +394,9 @@ public class Main extends Application {
 
     }
 
-
+    /*
+     * private helper for determing the max first ordering
+     */
     private void determineMax() {
         try {
             FarmData max = formatedData.stream().max(Comparator.comparing(FarmData::getWeight)).get();
@@ -368,6 +407,9 @@ public class Main extends Application {
 
     }
 
+    /*
+     * private helper for detemining min first ordering
+     */
     private void determineMin() {
         try {
             FarmData min = formatedData.stream().min(Comparator.comparing(FarmData::getWeight)).get();
@@ -377,6 +419,9 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * private helper for determing average ordering
+     */
     private void determineAverage() {
 
         if (data.size() == 0)
@@ -391,6 +436,11 @@ public class Main extends Application {
         minMaxOrAve.setText("Average weight : " + sum / data.size());
     }
 
+    /*
+     * called when percent option is ticked for display
+     * 
+     * @param list of farm data 
+     */
     private void setPercent(List<FarmData> farmData) {
 
         double sum = 0;
@@ -407,6 +457,11 @@ public class Main extends Application {
 
     }
 
+    /*
+     * private method for creating list for farm report with month organization
+     * 
+     * @return List of Farm data
+     */
     private List<FarmData> makeListForFarmReport() {
         List<FarmData> weightByMonths = new ArrayList<>();
         weightByMonths.add(new FarmData("Jan"));
@@ -426,12 +481,17 @@ public class Main extends Application {
     }
 
 
+    /**
+     * handles controlling and displaying of farm report to screen when option is chosen
+     * @throws IOException
+     */
     private void farmReport() throws IOException {
         table.getColumns().get(0).setVisible(false); // make date not visible
         table.getColumns().get(1).setVisible(true); // make month visible
         table.getColumns().get(2).setVisible(false); // make farmID not visible
         table.getColumns().get(3).setVisible(true); //make weight Visible
 
+        //data stream for processing
         formatedData = data.stream()
                 .filter(farmData -> farmData.getDate().substring(0, 4).equalsIgnoreCase(yearInput)
                         && farmData.getFarmID().equalsIgnoreCase(farmIdInput))
