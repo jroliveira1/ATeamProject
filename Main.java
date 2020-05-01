@@ -208,6 +208,10 @@ public class Main extends Application {
         });
 
         originalData.setOnAction(event -> {
+            table.getColumns().get(0).setVisible(true);
+            table.getColumns().get(1).setVisible(false);
+            table.getColumns().get(2).setVisible(true);
+            table.getColumns().get(3).setVisible(true);
             table.setItems(FXCollections.observableArrayList(data));
         });
 
