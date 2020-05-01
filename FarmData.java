@@ -4,28 +4,21 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 /**
  * public class that is used to represent the data stored in all 4 types of data reports
  */
-public class FarmData {
+public class FarmData implements Comparable <FarmData>{
     private SimpleStringProperty date = new SimpleStringProperty("");
     private SimpleStringProperty month = new SimpleStringProperty("");
     private SimpleStringProperty farmID = new SimpleStringProperty("");
     private SimpleIntegerProperty weight = new SimpleIntegerProperty(0);;
-    private SimpleStringProperty percent = new SimpleStringProperty("n/a");
+    private SimpleStringProperty percent;
 
-    public FarmData(Integer weight, String month) {
-        this.month = new SimpleStringProperty(month);
-        this.weight = new SimpleIntegerProperty(weight);
-    }
-    public FarmData(Integer weight, String month, String percent) {
-        this.month = new SimpleStringProperty(month);
-        this.weight = new SimpleIntegerProperty(weight);
-        this.percent = new SimpleStringProperty(percent);
-    }
 
     /**
      * constructor used for reading from file
@@ -36,6 +29,18 @@ public class FarmData {
     public FarmData(String date, String month, String farmID, Integer weight){
         this.date = new SimpleStringProperty(date);
         this.month = new SimpleStringProperty(month);
+        this.farmID = new SimpleStringProperty(farmID);
+        this.weight = new SimpleIntegerProperty(weight);
+    }
+
+    /**
+     * constructor used for adding to data set
+     * @param date
+     * @param farmID
+     * @param weight
+     */
+    public FarmData(String date,  String farmID, Integer weight){
+        this.date = new SimpleStringProperty(date);
         this.farmID = new SimpleStringProperty(farmID);
         this.weight = new SimpleIntegerProperty(weight);
     }
@@ -58,15 +63,6 @@ public class FarmData {
         this.month= new SimpleStringProperty(month);
     }
 
-    public FarmData(String farmID, Integer weight, String percent) {
-        this.farmID = new SimpleStringProperty(farmID);
-        this.weight = new SimpleIntegerProperty(weight);
-        this.percent = new SimpleStringProperty(percent);
-    }
-
-    public FarmData() {
-
-    }
 
     @Override
     /**
@@ -110,7 +106,7 @@ public class FarmData {
 
     public String getMonth() {
         if (this.month == null) this.month = new SimpleStringProperty();
-       return this.month.get();
+        return this.month.get();
     }
 
     public StringProperty monthProperty() {
@@ -165,7 +161,7 @@ public class FarmData {
 
     public void setPercent(String percent) {
         if(this.percent == null) this.percent = new SimpleStringProperty();
-        this.percent.setValue(percent);
+        this.percent.set(percent);
     }
 
     public String getPercent() {
@@ -191,4 +187,18 @@ public class FarmData {
     public String printToCsvFile(){
         return getDate() + "," + getFarmID() + "," + getWeight();
     }
+
+
+    @Override
+    public int compareTo(FarmData o) {
+        // TODO Auto-generated method stub
+        Integer comp1 = Integer.parseInt(this.getFarmID().substring(5).trim());
+        Integer comp2 = Integer.parseInt(o.getFarmID().substring(5).trim());
+        return comp1.compareTo(comp2);
+    }
+    public static void main(String[] args) {
+
+
+    }
+
 }
