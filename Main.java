@@ -227,8 +227,8 @@ public class Main extends Application {
      * @return
      */
     private Label makeDragLabel() {
-        Label dragFile = new Label("Drag and Drop File Here");
-        Tooltip dragTip = new Tooltip("drag files here from folder to add to data set");
+        Label dragFile = new Label("Drag and Drop File(s) Here");
+        Tooltip dragTip = new Tooltip("addition files will add to the data set");
         Tooltip.install(dragFile, dragTip);
         dragFile.setId("drop");
         dragFile.setPadding(new Insets(10, 10, 0, 10));
